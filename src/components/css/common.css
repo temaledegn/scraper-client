@@ -1,0 +1,24 @@
+.borderless {
+  border: none;
+}
+
+.borderless:hover,
+.borderless:active,
+.borderless:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.twitter-image {
+  border-radius: 50%;
+}
+
+.gradiant-border {
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #ddd;
+  /* background-image: linear-gradient(#fff, #bbb), linear-gradient(#fff, #bbb);
+  background-size: 1px 100%;
+  background-position: 0 0, 50% 0;
+  background-repeat: no-repeat; */
+}

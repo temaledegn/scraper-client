@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  /* font-family: Helvetica Neue, Helvetica, Arial, sans-serif; */
+  font-family: Lato, sans-serif;
+}
+
+.banner {
+  background: #fff;
+  font-family: Lato, sans-serif;
+}
+
+.navbar-nav-primary {
+  text-transform: uppercase;
+}
+
+.navbar-form-search {
+  position: relative;
+}
+
+.navbar-form-search .form-control {
+  width: 250px;
+}
+
+.navbar-form-search .btn {
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+}
+
+.navbar-form-search .btn:active,
+.navbar-form-search .btn:hover,
+.navbar-form-search .btn:focus {
+  color: #000;
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-form-search .search-form-container {
+  text-align: right;
+  position: absolute;
+  width: 300px;
+  overflow: hidden;
+  background: #fff;
+  right: 60px;
+  top: 0;
+  z-index: 9;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar-form-search .search-form-container.hdn {
+  width: 0;
+}
+
+.navbar-form-search .search-form-container .search-input-group {
+  width: 300px;
+}
+
+.introduction {
+  height: 100vh;
+  width: 100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  position: relative;
+  text-align: center;
+}
+
+.center-element {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

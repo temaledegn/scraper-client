@@ -1,0 +1,13 @@
+.indent {
+  margin-left: 5%;
+}
+
+.borderless li {
+  border: 0 none;
+}
+
+.sticky {
+  position: -webkit-sticky;
+  position: fixed;
+  top: 50;
+}
