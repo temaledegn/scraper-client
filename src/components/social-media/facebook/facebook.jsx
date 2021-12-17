@@ -30,67 +30,67 @@ class Facebook extends Component {
 
 
 
-  // fetchAndRenderData() {
-  //   fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
-  //     headers: new Headers({
-  //       'x-access-token': getAccessToken(),
-  //     })
-  //   }).then((response) => {
-  //     return response.json();
-  //   }).then((jsonResponse) => {
-  //     if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-  //       const list =
-  //         React.createElement('div', {},
-  //           React.createElement('ul', {},
-  //             jsonResponse.map((item) => React.createElement('li', {},
-  //               React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete' },
-  //                 React.createElement('a', { href: item, target: '_blank' }, item),
-  //                 React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-  //                 React.createElement('div', {}),
-  //                 React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-  //               React.createElement('div', {})))
-  //           )
-  //         );
-  //       this.setState({ currentlyScraping: list });
-  //     } else {
-  //       const list = React.createElement('div', {},
-  //         React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-  //       )
-  //       this.setState({ currentlyScraping: list })
-  //     }
-  //   });
-  // }
+  fetchAndRenderData() {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
+      headers: new Headers({
+        'x-access-token': getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      if (jsonResponse.length > 1 || jsonResponse[0] != '') {
+        const list =
+          React.createElement('div', {},
+            React.createElement('ul', {},
+              jsonResponse.map((item) => React.createElement('li', {},
+                React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete' },
+                  React.createElement('a', { href: item, target: '_blank' }, item),
+                  React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
+                  React.createElement('div', {}),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
+                React.createElement('div', {})))
+            )
+          );
+        this.setState({ currentlyScraping: list });
+      } else {
+        const list = React.createElement('div', {},
+          React.createElement('p', { style: { color: 'grey' } }, 'No link found')
+        )
+        this.setState({ currentlyScraping: list })
+      }
+    });
+  }
 
-  // fetchAndRenderDataUser() {
-  //   fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get',{
-  //     headers: new Headers({
-  //       'x-access-token': getAccessToken(),
-  //     })
-  //   }).then((response) => {
-  //     return response.json();
-  //   }).then((jsonResponse) => {
-  //     if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-  //       const list =
-  //         React.createElement('div', {},
-  //           React.createElement('ul', {},
-  //             jsonResponse.map((item) => React.createElement('li', {},
-  //               React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete' },
-  //                 React.createElement('a', { href: item, target: '_blank' }, item),
-  //                 React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-  //                 React.createElement('div', {}),
-  //                 React.createElement('button', { type: 'submit', className: 'btn btn-danger btn-sm' }, '\u2715 Delete')),
-  //               React.createElement('div', {})))
-  //           )
-  //         );
-  //       this.setState({ currentlyScrapingUser: list });
-  //     } else {
-  //       const list = React.createElement('div', {},
-  //         React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-  //       )
-  //       this.setState({ currentlyScrapingUser: list })
-  //     }
-  //   });
-  // }
+  fetchAndRenderDataUser() {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get',{
+      headers: new Headers({
+        'x-access-token': getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      if (jsonResponse.length > 1 || jsonResponse[0] != '') {
+        const list =
+          React.createElement('div', {},
+            React.createElement('ul', {},
+              jsonResponse.map((item) => React.createElement('li', {},
+                React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete' },
+                  React.createElement('a', { href: item, target: '_blank' }, item),
+                  React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
+                  React.createElement('div', {}),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-danger btn-sm' }, '\u2715 Delete')),
+                React.createElement('div', {})))
+            )
+          );
+        this.setState({ currentlyScrapingUser: list });
+      } else {
+        const list = React.createElement('div', {},
+          React.createElement('p', { style: { color: 'grey' } }, 'No link found')
+        )
+        this.setState({ currentlyScrapingUser: list })
+      }
+    });
+  }
 
   fetchAndRenderDataAvaialbe() {
 
