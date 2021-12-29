@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "../css/common.css";
 
+import { MDBDataTable } from "mdbreact";
+
 class SearchBox extends Component {
   render() {
     return (
@@ -63,7 +65,7 @@ class SearchBoxSmall extends Component {
                     placeholder="&#xF002;&emsp; Enter Keyword or Username"
                     style={{ fontFamily: "Arial, FontAwesome" }}
                   />
-                   <input type="hidden" name="doc-id" value={this.props.doc_id} />
+                  <input type="hidden" name="doc-id" value={this.props.doc_id} />
                   <input type="hidden" name="type" value={this.props.type} />
                 </div>
                 <div className="col-auto">
@@ -168,11 +170,82 @@ class FrequentCards extends Component {
   }
 }
 
+class ScrapingCards extends Component {
+  render() {
+    return (
+      <div className="col-md-2" style={{ textAlign: "center" }}>
+        <div>
+          <Image src={this.props.image} alt="card" />
+          <div
+            className="card-body"
+            style={{
+              marginLeft: 0,
+              marginRight: 0,
+              paddingLeft: 0,
+              paddingRight: 0,
+            }}
+          >
+            <h5 className="card-title">{this.props.title}</h5>
+
+            <a href={this.props.link} className="btn btn-sm btn-warning">
+              Open
+            </a>
+
+            <a href={this.props.link} className="btn btn-sm btn-danger">
+              Delete
+            </a>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+
+
+class ScrapingTable extends Component {
+  render() {
+    const dataRep = [
+      {
+        label: "#",
+        field: "number",
+        sort: "asc",
+        width: 10,
+      },
+      {
+        label: "Username OR Link",
+        field: "username_link",
+        sort: "asc",
+        maxWidth: 100,
+        width: 50,
+      },
+      {
+        label: "Delete",
+        field: "likes",
+        sort: "disabled",
+        width: 20,
+      },
+      {
+        label: "Open",
+        field: "open",
+        sort: "disabled",
+        width: 20,
+      }
+    ];
+    let data = { columns: dataRep, rows: this.props.tableData }
+    return <MDBDataTable striped bordered hover data={data} />;
+  }
+}
+
+
 const CommonComponents = {
   SearchBox: SearchBox,
   FreqCard: FrequentCards,
   SearchBoxSmall: SearchBoxSmall,
   AddRequestField: AddRequestField,
+  ScrapingCards: ScrapingCards,
+  ScrapingTable: ScrapingTable,
 };
 
 export default CommonComponents;

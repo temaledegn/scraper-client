@@ -31,7 +31,7 @@ class PreFacebook extends Component {
   onPageAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value }, {
-      headers:{'x-access-token':getAccessToken()}
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -49,7 +49,7 @@ class PreFacebook extends Component {
   onPageDeleteHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link': e.target.link.value }, {
-      headers:{'x-access-token':getAccessToken()}
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -67,7 +67,7 @@ class PreFacebook extends Component {
   onUserAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value }, {
-      headers:{'x-access-token':getAccessToken()}
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -85,7 +85,7 @@ class PreFacebook extends Component {
   onUserDeleteHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': e.target.link.value }, {
-      headers:{'x-access-token':getAccessToken()}
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -194,6 +194,10 @@ class PreFacebook extends Component {
     return (
       <React.Fragment>
         <ToastContainer />
+        <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
+        <CommonComponents.SearchBox action="/facebook/search" />   
+        <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
+        <CommonComponents.SearchBox action="/facebook/search" />
         <div className="row">
           <div className="col-md-6" style={{ padding: '5%', textAlign: 'center' }}>
             <img src={imgFbUser} alt="card" height="300" />
