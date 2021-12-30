@@ -17,7 +17,7 @@ class Linkedin extends Component {
   static data = [];
 
   state = {
-    currentlyScraping: 'Loading . . .',
+    currentlyScraping: [],
     availablePages: 'Loading . . .'
   };
 
@@ -45,9 +45,13 @@ class Linkedin extends Component {
       });
   }
 
-  onlinkDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/delete', { 'link': e.target.link.value }, {
+  // onlinkDeleteHandler = (e) => {
+  //   e.preventDefault();
+
+  // }
+
+  onlinkDeleteHandler = (link) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/delete', { 'link': link }, {
       headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
@@ -71,18 +75,11 @@ class Linkedin extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list =
-        React.createElement('div', {},
-          React.createElement('ul', {},
-            jsonResponse.map((item) => React.createElement('li', {},
-              React.createElement('form', { method: 'POST', onSubmit: this.onlinkDeleteHandler },
-                React.createElement('a', { href: item, target: '_blank' }, item),
-                React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-                React.createElement('div', {}),
-                React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, 'Delete')),
-              React.createElement('div', {})))
-          )
-        );
+      let list = [];
+
+      list = jsonResponse.map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onlinkDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
 
 
       this.setState({ currentlyScraping: list });
@@ -104,6 +101,7 @@ class Linkedin extends Component {
       return response.json();
     }).then((jsonResponse) => {
       this.data = jsonResponse;
+      console.log(this.data);
       this.state.collapseExpand = [...Array(jsonResponse.length).keys()].map((item) => false);
       // alert(this.state.collapseExpand.toString())
       this.renderData();
@@ -190,12 +188,21 @@ class Linkedin extends Component {
     return (
       <div style={{ textAlign: 'left', margin: "0% 5% 5% 5%" }}>
 
-        <ToastContainer />
+        <ToastContainer
+          position="bottom-center"
+          className="toast-container"
+          theme="colored"
+          />
+
+
+        <div style={{textAlign:"center", marginTop:"2%"}}> <h3><b>LINKEDIN</b></h3></div>
+
+
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", marginTop: "3%" }}>
+        {/* <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h3><b>SCRAPED PROFILES</b></h3>
-        </div>
-        <div className="row" style={{ marginTop: "3%", marginBottom: "5%" }}>
+        </div> */}
+        <div className="row" style={{ marginTop: "3%", marginBottom: "5%", textAlign: "start" }}>
           {this.state.availablePages}
         </div>
 
@@ -209,17 +216,20 @@ class Linkedin extends Component {
         </div>
 
 
-        <div>
+        {/* <div>
           <h4 style={{ color: "#444444" }}>CURRENTLY SCRAPING</h4>
           <p>The linkedin scraper is currently working on the following links</p>
           {this.state.currentlyScraping}
-        </div>
+        </div> */}
         <div style={{ margin: "5%" }}></div>
 
-        <div style={{ textAlign: 'start' }} id="add-requests-div">
-          <h4 style={{ color: "#444444" }}>ADD NEW REQUEST</h4>
-          <p>Enter linkedin profile link to start scraping</p>
-          </div>
+        <div style={{ textAlign: 'center' }} id="add-requests-div">
+          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onlinkAddHandler} name='link' />
+
+        </div>
       </div>
     );
   }

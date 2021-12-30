@@ -230,6 +230,8 @@ function TweetList(props) {
             </div>
 
           ),
+          sentiment: React.createElement('p', {color:'grey'}, 'N/A'),
+          reporting:React.createElement('button', {className:"btn btn-sm btn-warning", disabled:true}, 'Report')
         });
       }
       setData({ columns: dataRep, rows: tmp });

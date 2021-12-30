@@ -222,17 +222,18 @@ class ScrapingTable extends Component {
       },
       {
         label: "Delete",
-        field: "likes",
+        field: "action_delete",
         sort: "disabled",
         width: 20,
       },
       {
         label: "Open",
-        field: "open",
+        field: "action_open",
         sort: "disabled",
         width: 20,
       }
     ];
+
     let data = { columns: dataRep, rows: this.props.tableData }
     return <MDBDataTable striped bordered hover data={data} />;
   }

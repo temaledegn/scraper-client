@@ -18,7 +18,7 @@ import axios from "axios";
 
 class Twitter extends Component {
   state = {
-    currentlyScraping: 'Loading . . .',
+    currentlyScraping: [],
     availablePages: 'Loading . . .'
   };
 
@@ -31,7 +31,7 @@ class Twitter extends Component {
   onUsernameAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'username': e.target.username.value }, {
-      headers:{'x-access-token':getAccessToken()}
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -46,10 +46,9 @@ class Twitter extends Component {
       });
   }
 
-  onUsernameDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'username': e.target.username.value }, {
-      headers:{'x-access-token':getAccessToken()}
+  onUsernameDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'username': item }, {
+      headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -72,18 +71,25 @@ class Twitter extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list =
-        React.createElement('div', {},
-          React.createElement('ul', {},
-            jsonResponse.map((item) => React.createElement('li', {},
-              React.createElement('form', { method: 'POST', onSubmit: this.onUsernameDeleteHandler },
-                React.createElement('a', { href: 'https://www.twitter.com/' + item, target: '_blank' }, item),
-                React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-                React.createElement('div', {}),
-                React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, 'Delete')),
-              React.createElement('div', {})))
-          )
-        );
+      // const list =
+      //   React.createElement('div', {},
+      //     React.createElement('ul', {},
+      //       jsonResponse.map((item) => React.createElement('li', {},
+      //         React.createElement('form', { method: 'POST', onSubmit: this.onUsernameDeleteHandler },
+      //           React.createElement('a', { href: 'https://www.twitter.com/' + item, target: '_blank' }, item),
+      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
+      //           React.createElement('div', {}),
+      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, 'Delete')),
+      //         React.createElement('div', {})))
+      //     )
+      //   );
+
+
+      const list = jsonResponse.map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUsernameDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://www.twitter.com/@' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
+
+
 
 
       this.setState({ currentlyScraping: list });
@@ -143,8 +149,14 @@ class Twitter extends Component {
   render() {
     return (
       <div style={{ margin: "1% 4% 0 4%" }}>
+        <ToastContainer
+          position="bottom-center"
+          className="toast-container"
+          theme="colored"
+        />
 
-        <ToastContainer />
+
+        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3></div>
         <CommonComponents.SearchBox action="/twitter/search" />
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
@@ -208,26 +220,30 @@ class Twitter extends Component {
             type='nodata'
           />
         </div>
-        <div style={{ textAlign: "center", margin: "5% 0 2% 0" }} id="scraping-requests-div">
-          <h2 style={{ color: "#555555" }}>
-            <b>SCRAPING REQUESTS</b>
-          </h2>
+
+
+
+        <div style={{ textAlign: "center", marginTop: "3%" }}>
+          <h3><b>SCRAPING REQUESTS</b></h3>
         </div>
 
-        <div>
-          <h4 style={{ color: "#444444" }}>CURRENTLY SCRAPING</h4>
-          <p>The twitter scraper is currently working on the following usernames</p>
-          {this.state.currentlyScraping}
+
+        <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
         </div>
+
         <div style={{ margin: "5%" }}></div>
 
-        <div style={{ textAlign: 'start' }} id="add-requests-div">
-          <h4 style={{ color: "#444444" }}>ADD NEW REQUEST</h4>
-          <p>Enter username to start scraping</p>
-          {/* <CommonComponents.AddRequestField hint="Enter username here" action={APIConstants.REQUESTS_API_ROOT + "/scraping/twitter/add"} name='username' /> */}
-          <CommonComponents.AddRequestField hint="Enter username here" on_submit={this.onUsernameAddHandler} name='username' />
+        <div style={{ textAlign: 'center' }} id="add-requests-div">
+          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUsernameAddHandler} name='username' />
 
         </div>
+
+
+
 
         <div style={{ margin: "5%" }}></div>
 

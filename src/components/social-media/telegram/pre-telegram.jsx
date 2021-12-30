@@ -18,8 +18,8 @@ class PreTelegram extends Component {
   state = {
     channelsScraped: 'Loading . . .',
     groupsScraped: 'Loading . . .',
-    currentlyScrapingChannel: 'Loading . . .',
-    currentlyScrapingGroup: 'Loading . . .',
+    currentlyScrapingChannel: [],
+    currentlyScrapingGroup: [],
     channelUsername: "",
     groupUsername: "",
   };
@@ -49,9 +49,8 @@ class PreTelegram extends Component {
       });
   }
 
-  onChannelDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete', { 'username': e.target.username.value }, {
+  onChannelDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete', { 'username': item }, {
       headers: {
         'x-access-token': getAccessToken()
       }
@@ -90,9 +89,8 @@ class PreTelegram extends Component {
       });
   }
 
-  onGroupDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete', { 'username': e.target.username.value }, {
+  onGroupDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete', { 'username': item }, {
       headers: {
         'x-access-token': getAccessToken()
       }
@@ -117,34 +115,43 @@ class PreTelegram extends Component {
       return response.json();/////////////
     }).then((jr) => {
       const jsonResponse = jr;
-      const listChannel =
-        React.createElement('div', {},
-          React.createElement('ul', {},
-            jsonResponse['channel_username'].map((item) => React.createElement('li', {},
-              // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete' },
-              React.createElement('form', { onSubmit: this.onChannelDeleteHandler },
-                React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
-                React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-                React.createElement('div', {}),
-                React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-              React.createElement('div', {})))
-          )
-        );
+      // const listChannel =
+      //   React.createElement('div', {},
+      //     React.createElement('ul', {},
+      //       jsonResponse['channel_username'].map((item) => React.createElement('li', {},
+      //         // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete' },
+      //         React.createElement('form', { onSubmit: this.onChannelDeleteHandler },
+      //           React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
+      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
+      //           React.createElement('div', {}),
+      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
+      //         React.createElement('div', {})))
+      //     )
+      //   );
 
-      const listGroup =
-        React.createElement('div', {},
-          React.createElement('ul', {},
-            jsonResponse['group_username'].map((item) => React.createElement('li', {},
-              // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete' },
-              React.createElement('form', { onSubmit: this.onGroupDeleteHandler },
+      const listChannel = jsonResponse['channel_username'].map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onChannelDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
 
-                React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
-                React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-                React.createElement('div', {}),
-                React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-              React.createElement('div', {})))
-          )
-        );
+      // const listGroup =
+      //   React.createElement('div', {},
+      //     React.createElement('ul', {},
+      //       jsonResponse['group_username'].map((item) => React.createElement('li', {},
+      //         // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete' },
+      //         React.createElement('form', { onSubmit: this.onGroupDeleteHandler },
+
+      //           React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
+      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
+      //           React.createElement('div', {}),
+      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
+      //         React.createElement('div', {})))
+      //     )
+      //   );
+
+      const listGroup = jsonResponse['group_username'].map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onGroupDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
+
 
       this.setState({ currentlyScrapingChannel: listChannel, currentlyScrapingGroup: listGroup });
 
@@ -159,7 +166,8 @@ class PreTelegram extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', {},
+      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-2" },
+        React.createElement('img', { src: imgTgChannel, width: "100px", style: { borderRadius: "50%" } }),
         React.createElement('a', { href: '/telegram?id=' + item['_id'] + '&type=channel' }, item['channel_username']), React.createElement('p', {}, new Date(item['date_of_scrapting']).toDateString())
       ));
       this.setState({ channelsScraped: list });
@@ -173,7 +181,8 @@ class PreTelegram extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', {},
+      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-2" },
+        React.createElement('img', { src: imgTgGroup, width: "100px", style: { borderRadius: "50%" } }),
         React.createElement('a', { href: '/telegram?id=' + item._id + '&type=group' }, item['group_username']), React.createElement('p', {}, new Date(item['date_of_scrapting']).toDateString())
       ));
       this.setState({ groupsScraped: list });
@@ -185,70 +194,76 @@ class PreTelegram extends Component {
   render() {
     return (
       <React.Fragment>
-        <ToastContainer />
-        <div className="row">
-          <div className="col-md-6" style={{ padding: '5%', textAlign: 'center' }}>
-            <img src={imgTgChannel} alt="card" height="300" style={{ borderRadius: '50%' }} />
-            <br />
-            <br />
-            <br />
-            <div style={{ textAlign: "center", marginBottom: '10%' }}>
-              <h3><b>CHANNELS</b></h3>
-              {/* <p>Content for the requested users were scrapped in the following dates!</p> */}
-              <p>Click on a username to continue!</p>
-              <br />
-              <div style={{ height: '350px', overflowY: 'scroll', border: 'solid 1px #eee' }}>{this.state.channelsScraped}</div>
-            </div>
 
+        <ToastContainer
+          position="bottom-center"
+          className="toast-container"
+          theme="colored"
+        />
 
-
-            <div id="currently-scraping-user">
-              <p>The telegram scraper is currently working on the following <b>CHANNELS</b></p>
-              {this.state.currentlyScrapingChannel}
-            </div>
-            <div style={{ margin: "8%" }}></div>
-
-            <div style={{ textAlign: 'center' }} id="add-requests-div">
-              <h5 style={{ color: "#444444" }}>ADD NEW REQUEST</h5>
-              <p>Enter username to start scraping</p>
-              {/* <CommonComponents.AddRequestField hint="Enter link here" action={APIConstants.REQUESTS_API_ROOT + "/scraping/telegram/channel/add"} name='username' /> */}
-              <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onChannelAddHandler} name='username' />
-            </div>
-
-
+        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TELEGRAM CHANNELS</b></h3></div>
+        <CommonComponents.SearchBox action="#" />
+        <br />
+        <br />
+        <br />
+        <div className="container">
+          <div className="row" style={{ maxHeight: "100vh", overflowY: "scroll" }}>
+            {this.state.channelsScraped}
 
           </div>
-          <div className="col-md-6" style={{ padding: '5%', textAlign: 'center' }}>
-            <img src={imgTgGroup} alt="card" height="300" />
-            <br />
-            <br />
-            <br />
-            <div style={{ textAlign: "center", marginBottom: '10%' }}>
 
-              <h3><b>GROUPS</b></h3>
-              {/* <p>Content for the requested pages or groups were scrapped in the following dates!</p> */}
-              <p>Click on username to continue!</p>
-              <br />
-              <div style={{ height: '350px', overflowY: 'scroll', border: 'solid 1px #eee' }}>{this.state.groupsScraped}</div>
-            </div>
-
-            <div id="currently-scraping-group">
-              <p>The telegram scraper is currently working on the following <b>GROUPS</b></p>
-              {this.state.currentlyScrapingGroup}
-            </div>
-            <div style={{ margin: "8%" }}></div>
-
-
-            <div style={{ textAlign: 'center' }} id="add-requests-div">
-              <h5 style={{ color: "#444444" }}>ADD NEW REQUEST</h5>
-              <p>Enter username to start scraping</p>
-              {/* <CommonComponents.AddRequestField hint="Enter link here" action={APIConstants.REQUESTS_API_ROOT + "/scraping/telegram/group/add"} name='username' /> */}
-              <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onGroupAddHandler} name='username' />
-            </div>
+          <div style={{ textAlign: "center", marginTop: "10%" }}>
+            <h3><b>SCRAPING REQUESTS</b></h3>
           </div>
 
+          <div className="container">
+            <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingChannel} />
+          </div>
+
+          <div style={{ textAlign: 'center', margin: "3%" }} id="add-requests-div">
+            <h5 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h5>
+            <p>Enter username to start scraping</p>
+            {/* <CommonComponents.AddRequestField hint="Enter link here" action={APIConstants.REQUESTS_API_ROOT + "/scraping/telegram/channel/add"} name='username' /> */}
+            <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onChannelAddHandler} name='username' />
+          </div>
+
+
+          <hr />
+          <hr />
+
+
+          <div style={{ textAlign: "center", marginTop: "10%" }}> <h3><b>TELEGRAM GROUPS</b></h3></div>
+          <CommonComponents.SearchBox action="#" />
+          <br />
+          <br />
+          <br />
+          <div className="container">
+            <div className="row" style={{ maxHeight: "100vh", overflowY: "scroll" }}>
+              {this.state.groupsScraped}
+            </div>
+
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: "10%" }}>
+            <h3><b>SCRAPING REQUESTS</b></h3>
+          </div>
+
+          <div className="container">
+            <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingGroup} />
+          </div>
+          <div style={{ textAlign: 'center', marginTop: "3%", marginBottom: "5%" }} id="add-requests-div">
+            <h5 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h5>
+            <p>Enter username to start scraping</p>
+            {/* <CommonComponents.AddRequestField hint="Enter link here" action={APIConstants.REQUESTS_API_ROOT + "/scraping/telegram/channel/add"} name='username' /> */}
+            <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onGroupAddHandler} name='username' />
+          </div>
+
+          <hr />
+          <hr />
 
         </div>
+
+
       </React.Fragment>
     );
   }

@@ -15,7 +15,7 @@ import getAccessToken from "../../../common/GlobalsFunctions";
 
 class PreFacebook extends Component {
   state = {
-    usersDates: 'Loading . . .', groupsDates: 'Loading . . .', currentlyScraping: 'Loading . . .', currentlyScrapingUser: 'Loading . . .',
+    usersDates: 'Loading . . .', groupsDates: 'Loading . . .', currentlyScraping:[], currentlyScrapingUser: [],
   };
 
 
@@ -46,9 +46,8 @@ class PreFacebook extends Component {
       });
   }
 
-  onPageDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link': e.target.link.value }, {
+  onPageDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link':item}, {
       headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
@@ -82,9 +81,8 @@ class PreFacebook extends Component {
       });
   }
 
-  onUserDeleteHandler = (e) => {
-    e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': e.target.link.value }, {
+  onUserDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': item }, {
       headers: { 'x-access-token': getAccessToken() }
     })
       .then((response) => {
@@ -111,24 +109,32 @@ class PreFacebook extends Component {
       return response.json();
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-        const list =
-          React.createElement('div', { textAlign: 'start' },
-            React.createElement('ul', {},
-              jsonResponse.map((item) => React.createElement('li', {},
-                React.createElement('form', { method: 'POST', onSubmit: this.onPageDeleteHandler },
-                  React.createElement('a', { href: item, target: '_blank' }, item),
-                  React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-                  React.createElement('div', {}),
-                  React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-                React.createElement('div', {})))
-            )
-          );
+        // const list =
+        //   React.createElement('div', { textAlign: 'start' },
+        //     React.createElement('ul', {},
+        //       jsonResponse.map((item) => React.createElement('li', {},
+        //         React.createElement('form', { method: 'POST', onSubmit: this.onPageDeleteHandler },
+        //           React.createElement('a', { href: item, target: '_blank' }, item),
+        //           React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
+        //           React.createElement('div', {}),
+        //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
+        //         React.createElement('div', {})))
+        //     )
+        //   );
+
+
+      const list = jsonResponse.map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
+
+
+
         this.setState({ currentlyScraping: list });
       } else {
-        const list = React.createElement('div', {},
-          React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-        )
-        this.setState({ currentlyScraping: list })
+        // const list = React.createElement('div', {},
+        //   React.createElement('p', { style: { color: 'grey' } }, 'No link found')
+        // )
+        this.setState({ currentlyScraping: [] })
       }
     });
   }
@@ -142,24 +148,32 @@ class PreFacebook extends Component {
       return response.json();
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-        const list =
-          React.createElement('div', { textAlign: 'left' },
-            React.createElement('ul', {},
-              jsonResponse.map((item) => React.createElement('li', {},
-                React.createElement('form', { method: 'POST', onSubmit: this.onUserDeleteHandler },
-                  React.createElement('a', { href: item, target: '_blank' }, item),
-                  React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-                  React.createElement('div', {}),
-                  React.createElement('button', { type: 'submit', className: 'btn btn-danger btn-sm' }, '\u2715 Delete')),
-                React.createElement('div', {})))
-            )
-          );
+        // const list =
+        //   React.createElement('div', { textAlign: 'left' },
+        //     React.createElement('ul', {},
+        //       jsonResponse.map((item) => React.createElement('li', {},
+        //         React.createElement('form', { method: 'POST', onSubmit: this.onUserDeleteHandler },
+        //           React.createElement('a', { href: item, target: '_blank' }, item),
+        //           React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
+        //           React.createElement('div', {}),
+        //           React.createElement('button', { type: 'submit', className: 'btn btn-danger btn-sm' }, '\u2715 Delete')),
+        //         React.createElement('div', {})))
+        //     )
+        //   );
+
+
+      const list = jsonResponse.map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+      });
+
+
+
         this.setState({ currentlyScrapingUser: list });
       } else {
-        const list = React.createElement('div', {},
-          React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-        )
-        this.setState({ currentlyScrapingUser: list })
+        // const list = React.createElement('div', {},
+        //   React.createElement('p', { style: { color: 'grey' } }, 'No link found')
+        // )
+        this.setState({ currentlyScrapingUser: [] })
       }
     });
   }
@@ -193,11 +207,66 @@ class PreFacebook extends Component {
   render() {
     return (
       <React.Fragment>
-        <ToastContainer />
+           <ToastContainer
+          position="bottom-center"
+          className="toast-container"
+          theme="colored"
+          />
+
+
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
-        <CommonComponents.SearchBox action="/facebook/search" />   
-        <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
-        <CommonComponents.SearchBox action="/facebook/search" />
+        <CommonComponents.SearchBox action="#" />   
+
+
+        <div style={{ textAlign: "center", marginTop: "3%" }}>
+          <h3><b>SCRAPING REQUESTS</b></h3>
+        </div>
+
+
+        <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingUser} />
+        </div>
+
+        <div style={{ margin: "5%" }}></div>
+
+        <div className="container" style={{ textAlign: 'center' }} id="add-requests-div">
+          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUserAddHandler} name='link' />
+
+        </div>
+
+
+
+
+        <div style={{ textAlign: "center", marginTop: "10%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
+        <CommonComponents.SearchBox action="#" />
+
+
+
+        <div style={{ textAlign: "center", marginTop: "3%" }}>
+          <h3><b>SCRAPING REQUESTS</b></h3>
+        </div>
+
+
+        <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
+        </div>
+
+        <div style={{ margin: "5%" }}></div>
+
+        <div className="container" style={{ textAlign: 'center' }} id="add-requests-div">
+          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onPageAddHandler} name='link' />
+
+        </div>
+
+
+
+
         <div className="row">
           <div className="col-md-6" style={{ padding: '5%', textAlign: 'center' }}>
             <img src={imgFbUser} alt="card" height="300" />
@@ -212,20 +281,7 @@ class PreFacebook extends Component {
               <span>{this.state.usersDates}</span>
             </div>
 
-
-
-            <div id="currently-scraping-user">
-              <p>The facebook scraper is currently working on the following <b>USERS</b></p>
-              {this.state.currentlyScrapingUser}
-            </div>
-            <div style={{ margin: "8%" }}></div>
-
-            <div style={{ textAlign: 'center' }} id="add-requests-div">
-              <h5 style={{ color: "#444444" }}>ADD NEW REQUEST</h5>
-              <p>Enter link to a profile to start scraping</p>
-              <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUserAddHandler} name='link' />
-            </div>
-
+ 
 
 
           </div>
@@ -243,18 +299,7 @@ class PreFacebook extends Component {
               <span>{this.state.groupsDates}</span>
             </div>
 
-            <div id="currently-scraping-group">
-              <p>The facebook scraper is currently working on the following <b>GROUPS/PAGES</b></p>
-              {this.state.currentlyScraping}
-            </div>
-            <div style={{ margin: "8%" }}></div>
-
-
-            <div style={{ textAlign: 'center' }} id="add-requests-div">
-              <h5 style={{ color: "#444444" }}>ADD NEW REQUEST</h5>
-              <p>Enter link to a page or group to start scraping</p>
-              <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onPageAddHandler} name='link' />
-            </div>
+         
           </div>
 
 
