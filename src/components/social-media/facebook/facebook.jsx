@@ -203,6 +203,7 @@ class Facebook extends Component {
             btn_text="Go To Posts"
             title="BBC"
             image={bbcLogo}
+            type="nodata"
           />
           <CommonComponents.FreqCard
             link="/facebook/page/fanabc"
@@ -223,6 +224,7 @@ class Facebook extends Component {
             btn_text="Go To Posts"
             title="CNN"
             image={cnnLogo}
+            type="nodata"
           />
           <CommonComponents.FreqCard
             link="/facebook/page/mereja-com"
@@ -236,6 +238,7 @@ class Facebook extends Component {
             btn_text="Go To Posts"
             title="Fana Media"
             image={fanaMeidaLogo}
+            type="nodata"
           />
         </div>
         {/* <div style={{ textAlign: "center", margin: "5% 0 2% 0" }} id="scraping-requests-div">

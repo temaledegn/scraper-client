@@ -156,7 +156,7 @@ class Twitter extends Component {
         />
 
 
-        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3></div>
+        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3><a href="http://172.20.23.177:5601/app/dashboards#/view/3ea81100-63f2-11ec-b6bf-37cf416580cd?_a=(viewMode:edit)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))" target="_blank">GET STATISTICS</a></div>
         <CommonComponents.SearchBox action="/twitter/search" />
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
@@ -164,7 +164,7 @@ class Twitter extends Component {
           </h2>
         </div>
         <div className='row' style={{ maxHeight: "100vh", overflowY: "scroll" }}> {this.state.availablePages}</div>
-
+{/* 
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
             <b>MOST POPULAR</b>
@@ -219,7 +219,7 @@ class Twitter extends Component {
             sm="twitter"
             type='nodata'
           />
-        </div>
+        </div> */}
 
 
 
