@@ -47,6 +47,18 @@ const dataRep = [
     sort: "disabled",
     width: 100,
   },
+  {
+    label: 'Sentiment',
+    field: "sentiment",
+    sort: "asc",
+    width: 50,
+  },
+  {
+    label: 'Reporting',
+    field: "reporting",
+    sort: "disabled",
+    width: 60,
+  },
 ];
 
 function print(content) {
@@ -215,6 +227,8 @@ function PostList(props) {
               <CommentButton doc_id={doc_id} page_id={page_id} post_id={_dat[x]._id} type={type} />
             </div>
           ),
+          sentiment:'N/A',
+          reporting: React.createElement('button', {className:"btn btn-sm btn-warning", disabled:true}, 'Report')
         });
       }
       setData({ columns: dataRep, rows: tmp });
