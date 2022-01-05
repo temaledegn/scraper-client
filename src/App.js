@@ -46,6 +46,8 @@ import insaLogo from "./assets/img/logo.jpg";
 import APIConstants from "./constants/constants";
 
 import AuthService from './services/auth.service'
+import CommentList from "./components/social-media/youtube/comments";
+// import { youtubeComments } from "../../../ScraperAPI/app/controllers/scraper.controller";
 
 
 
@@ -348,11 +350,17 @@ function LinkedinX() {
 function YoutubeX() {
   let match = useRouteMatch();
   return (
+
     <Switch>
+      <Route path={`${match.path}/comments/`}>
+        <YoutubeComments />
+      </Route>
       <Route path={match.path}>
         <YoutubeLanding />
       </Route>
     </Switch>
+
+
   );
 }
 
@@ -407,6 +415,30 @@ function YoutubeLanding() {
     </React.Fragment>
   );
 }
+
+function YoutubeComments() {
+  const [loading, setLoading] = useState(true);
+  let { doc_id } = useParams();
+  const url = APIConstants.YOUTUBE_API_ROOT + "/youtube/comments/?doc-id=" + doc_id;
+
+  return (
+    <React.Fragment>
+      <NavBar />
+      <div style={{ textAlign: "center", marginTop:"5%"}}>
+
+        {/* <h4><a target="_blank" href="">Go To Video <i className="fa fa-external-link"></i></a></h4> */}
+        <h4><b>Video Comments</b></h4>
+      </div>
+      <div
+        // className="container"
+        style={{ marginBottom: "10%", textAlign: "center", marginLeft: "15%", marginRight: "15%" }}
+      >
+        <CommentList />
+      </div>
+    </React.Fragment>
+  );
+}
+
 
 let about = "";
 let numberOfLikes = "";

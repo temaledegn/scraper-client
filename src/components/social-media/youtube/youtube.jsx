@@ -112,7 +112,7 @@ class Youtube extends Component {
   renderData() {
 
 
-    fetch(APIConstants.TWITTER_API_ROOT + '/twitter/all-users', {
+    fetch(APIConstants.TWITTER_API_ROOT + '/youtube/all-videos', {
       headers: new Headers({
         'x-access-token': getAccessToken(),
       })
@@ -121,35 +121,31 @@ class Youtube extends Component {
       return response.json();
     }).then((jsonResponse) => {
 
-      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-3', },
-        React.createElement('h5', {}, item.Fullname + ' ON ' + item.Date_of_Scraping),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Username: '),
-          React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'About: '),
-          React.createElement('span', {}, item.Description),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Tweets: '),
-          React.createElement('span', {}, item.Tweets),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Followers: '),
-          React.createElement('span', {}, item['Number of Followers']),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Following: '),
-          React.createElement('span', {}, item['Number of Followings']),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Joined Date: '),
-          React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
-        ),
-        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/twitter/page/' + item.UserName.substring(1) + '?doc-id=' + item._id }, 'Go To Tweets \u279c'
-        ),
-        React.createElement('div', { style: { marginTop: "15%" } })
+      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-4', },
+      React.createElement('h4', {}, item.post[0]['title']),
+
+      React.createElement('a', {href:item.url}, item.url),
+
+      React.createElement('p', {}, 
+        React.createElement('b', {}, 'Number of Views:  '),
+        React.createElement('span', {}, item.post[0].numberofViews),
+      ),
+      React.createElement('p', {}, 
+      React.createElement('b', {}, 'Number of Likes:  '),
+        React.createElement('span', {}, item.post[0].numberoflikes),
+      ),
+      
+      React.createElement('p', {}, 
+        React.createElement('b', {}, 'Channel Name:  '),
+        React.createElement('a', {href:item.post[0].channel[0].channel_url}, item.post[0].channel[0].channel_name),
+      ),
+      
+     
+      React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/youtube/comments/?doc-id=' +item._id }, 'Go To Comments \u279c'
+      ),
+      
+
+      React.createElement('hr', {})
       ));
 
 
