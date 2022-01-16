@@ -4,7 +4,7 @@ import { MDBDataTable } from "mdbreact";
 import axios from "axios";
 import { useState } from "react";
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 function TelegramPostList(props) {
@@ -57,7 +57,7 @@ function TelegramPostList(props) {
   useEffect(() => {
     axios.get(url, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     }).then((response) => {
       let _dat = [];

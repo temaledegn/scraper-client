@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Collapse } from 'react-collapse';
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 import CommonComponents from "../../common/common";
@@ -30,7 +30,7 @@ class Youtube extends Component {
   onlinkAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/youtube/add', { 'link': e.target.link.value }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -52,7 +52,7 @@ class Youtube extends Component {
 
   onlinkDeleteHandler = (link) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/delete', { 'link': link }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -70,7 +70,7 @@ class Youtube extends Component {
   fetchAndRenderData() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -95,7 +95,7 @@ class Youtube extends Component {
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.LINKEDIN_API_ROOT + '/linkedin/all-scraped', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -114,7 +114,7 @@ class Youtube extends Component {
 
     fetch(APIConstants.TWITTER_API_ROOT + '/youtube/all-videos', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       console.log(response);
@@ -122,30 +122,30 @@ class Youtube extends Component {
     }).then((jsonResponse) => {
 
       const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-4', },
-      React.createElement('h4', {}, item.post[0]['title']),
+        React.createElement('h4', {}, item.post[0]['title']),
 
-      React.createElement('a', {href:item.url}, item.url),
+        React.createElement('a', { href: item.url }, item.url),
 
-      React.createElement('p', {}, 
-        React.createElement('b', {}, 'Number of Views:  '),
-        React.createElement('span', {}, item.post[0].numberofViews),
-      ),
-      React.createElement('p', {}, 
-      React.createElement('b', {}, 'Number of Likes:  '),
-        React.createElement('span', {}, item.post[0].numberoflikes),
-      ),
-      
-      React.createElement('p', {}, 
-        React.createElement('b', {}, 'Channel Name:  '),
-        React.createElement('a', {href:item.post[0].channel[0].channel_url}, item.post[0].channel[0].channel_name),
-      ),
-      
-     
-      React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/youtube/comments/?doc-id=' +item._id }, 'Go To Comments \u279c'
-      ),
-      
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Number of Views:  '),
+          React.createElement('span', {}, item.post[0].numberofViews),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Number of Likes:  '),
+          React.createElement('span', {}, item.post[0].numberoflikes),
+        ),
 
-      React.createElement('hr', {})
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Channel Name:  '),
+          React.createElement('a', { href: item.post[0].channel[0].channel_url }, item.post[0].channel[0].channel_name),
+        ),
+
+
+        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/youtube/comments/?doc-id=' + item._id }, 'Go To Comments \u279c'
+        ),
+
+
+        React.createElement('hr', {})
       ));
 
 

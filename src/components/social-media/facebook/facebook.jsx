@@ -13,7 +13,7 @@ import merejaLogo from "../../../assets/img/scraped/mereja-com.jpg";
 
 import APIConstants from "../../../constants/constants";
 
-import getAccessToken from '../../../common/GlobalsFunctions';
+import globalFunctions from '../../../common/GlobalsFunctions';
 
 class Facebook extends Component {
   state = {
@@ -33,7 +33,7 @@ class Facebook extends Component {
   fetchAndRenderData() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -62,9 +62,9 @@ class Facebook extends Component {
   }
 
   fetchAndRenderDataUser() {
-    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get',{
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Collapse } from 'react-collapse';
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 import CommonComponents from "../../common/common";
@@ -30,7 +30,7 @@ class Linkedin extends Component {
   onlinkAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/add', { 'link': e.target.link.value }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -52,7 +52,7 @@ class Linkedin extends Component {
 
   onlinkDeleteHandler = (link) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/delete', { 'link': link }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -70,7 +70,7 @@ class Linkedin extends Component {
   fetchAndRenderData() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -95,7 +95,7 @@ class Linkedin extends Component {
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.LINKEDIN_API_ROOT + '/linkedin/all-scraped', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -192,10 +192,10 @@ class Linkedin extends Component {
           position="bottom-center"
           className="toast-container"
           theme="colored"
-          />
+        />
 
 
-        <div style={{textAlign:"center", marginTop:"2%"}}> <h3><b>LINKEDIN</b></h3></div>
+        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>LINKEDIN</b></h3></div>
 
 
         <CommonComponents.SearchBox action="#" />

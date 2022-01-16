@@ -6,7 +6,7 @@ import imgTgGroup from "../../../assets/img/telegramGroup.png";
 import imgTgChannel from "../../../assets/img/telegramChannel.jpg";
 
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -33,7 +33,7 @@ class PreTelegram extends Component {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/add', { 'username': e.target.username.value }, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     })
       .then((response) => {
@@ -52,7 +52,7 @@ class PreTelegram extends Component {
   onChannelDeleteHandler = (item) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete', { 'username': item }, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     })
       .then((response) => {
@@ -73,7 +73,7 @@ class PreTelegram extends Component {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/add', { 'username': e.target.username.value }, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     })
       .then((response) => {
@@ -92,7 +92,7 @@ class PreTelegram extends Component {
   onGroupDeleteHandler = (item) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete', { 'username': item }, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     })
       .then((response) => {
@@ -109,7 +109,7 @@ class PreTelegram extends Component {
   fetchAndRenderDataScraping() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();/////////////
@@ -161,7 +161,7 @@ class PreTelegram extends Component {
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.TELEGRAM_API_ROOT + '/telegram/channel/all-scraped', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -176,7 +176,7 @@ class PreTelegram extends Component {
 
     fetch(APIConstants.TELEGRAM_API_ROOT + '/telegram/group/all-scraped', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();

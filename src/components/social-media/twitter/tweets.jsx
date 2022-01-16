@@ -2,8 +2,86 @@ import React, { Component, useEffect, useState } from "react";
 import { MDBDataTable } from "mdbreact";
 
 import axios from "axios";
-import getAccessToken from "../../../common/GlobalsFunctions";
+
 import APIConstants from "../../../constants/constants";
+
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import globalFunctions from "../../../common/GlobalsFunctions";
+
+
+
+class ReportWidget extends React.Component {
+
+  constructor(props) {
+    super(props);
+    console.log('creating widget with id ' + props._id);
+    this.state = { reporting: props.reporting, tweetId: props.tweetId };
+    console.log(props);
+  }
+
+  render() {
+    if (this.state.reporting == 'false') {
+      return React.createElement('button', { id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport('tweet', this.props.tweetId, this) } }, 'Report');
+    } else if (this.state.reporting == 'pending') {
+      return React.createElement('p', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-spinner', style: { color: 'orange' } }, ''),
+        React.createElement('span', {}, 'Pending...')
+      );
+    } else if (this.state.reporting == 'true') {
+      return React.createElement('p', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-check-circle', style: { color: 'green' } }, ''),
+        React.createElement('span', {}, 'Reported')
+      );
+    } else {
+      return 'N/A';
+    }
+  };
+}
+
+
+// function ReportWidget(props) {
+
+//   const [widget, setWidget] = useState(<button className="btn btn-sm btn-warning" onClick={() => setWidget(<p><i className="fa fa-spinner" style={{ color: "orange" }}></i><span>Pending...</span></p>)}>Report</button>);
+//   return (widget);
+
+//   if (props.reporting == 'false') {
+//     return React.createElement('button', { id: props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport('tweet', props.tweetId, this) } }, 'Report');
+//   } else if (props.reporting == 'pending') {
+//     return React.createElement('p', { id: props._id, },
+//       React.createElement('i', { className: 'fa fa-spinner', style: { color: 'orange' } }, ''),
+//       React.createElement('span', {}, 'Pending...')
+//     );
+//   } else if (props.reporting == 'true') {
+//     return React.createElement('p', { id: props._id, },
+//       React.createElement('i', { className: 'fa fa-check-circle', style: { color: 'green' } }, ''),
+//       React.createElement('span', {}, 'Reported')
+//     );
+//   } else {
+//     return 'N/A';
+//   }
+// }
+
+
+let onHandleReport = (_type, _id, button) => {
+  axios.post(APIConstants.REQUESTS_API_ROOT + '/reporting/twitter/add', { 'reporting_data': _type + ' ' + _id + ' ' + globalFunctions.getUserId() }, {
+    headers: { 'x-access-token': globalFunctions.getAccessToken() }
+  })
+    .then((response) => {
+      if (response.data.type == 'success') {
+        toast.success(response.data.message);
+        button.setState({
+          reporting: 'pending'
+        });
+      } else if (response.data.type == 'warning') {
+        toast.warning(response.data.message);
+      } else if (response.data.type == 'error') {
+        toast.error(response.data.message);
+      }
+    });
+}
+
 
 const datetimeString = (
   <span>&nbsp;&nbsp;&nbsp;Date&nbsp;&amp;&nbsp;Time&nbsp;&nbsp;&nbsp;</span>
@@ -68,10 +146,7 @@ const dataRep = [
   },
 ];
 
-//   const [loading, setLoading] = useState(true);
 let data, setData;
-// let userName = props.userName;
-
 
 class ReplySection extends Component {
   state = {};
@@ -96,12 +171,13 @@ class ReplySection extends Component {
         <b style={{ color: '#888' }}>Likes:</b>&emsp;<span>{this.props.like_count}</span>&emsp;&emsp;
         <b style={{ color: '#888' }}>Retweets:</b>&emsp;<span>{this.props.retweet_count}</span>&emsp;&emsp;
         <b style={{ color: '#888' }}>Replies:</b>&emsp;<span>{this.props.reply_count}</span>&emsp;&emsp;
-        <b style={{ color: '#888' }}>Hashtags:</b>&emsp;<span>{this.props.hashtags.length == 0 ? <span style={{ color: 'grey' }}>None</span> :hashtags}</span>
+        <b style={{ color: '#888' }}>Hashtags:</b>&emsp;<span>{this.props.hashtags.length == 0 ? <span style={{ color: 'grey' }}>None</span> : hashtags}</span>
         <hr />
       </div>
     );
   }
 }
+
 
 
 function ReplyButton(props) {
@@ -199,17 +275,37 @@ function TweetList(props) {
   const url = APIConstants.TWITTER_API_ROOT + "/twitter/tweets/" + doc_id;
 
   useEffect(() => {
+
+    let currentlyReporting = [];
+
+    axios.get(APIConstants.TWITTER_API_ROOT + "/reporting/twitter/get", {
+      headers: {
+        'x-access-token': globalFunctions.getAccessToken()
+      }
+    }).then((response) => {
+      // let reporting_list = response.data;
+      let reporting_tweet_ids = response.data.map((item) => {
+        return item.split(' ')[1];
+      })
+      currentlyReporting.push(...reporting_tweet_ids);
+
+    });
+
     axios.get(url, {
       headers: {
-        'x-access-token': getAccessToken()
+        'x-access-token': globalFunctions.getAccessToken()
       }
     }).then((response) => {
       //   console.log(response);
       let _dat = response.data.tweets;
       let tmp = [];
       let tmp_src = {};
+
+
       for (let x = 0; x < _dat.length; x++) {
         tmp_src = _dat[x];
+        let reporting = tmp_src.reporting;
+        console.log('creating widget number ' + x.toString());
         tmp.push({
           tweetID: _dat[x].id,
           number: x + 1,
@@ -230,8 +326,11 @@ function TweetList(props) {
             </div>
 
           ),
-          sentiment: React.createElement('p', {color:'grey'}, 'N/A'),
-          reporting:React.createElement('button', {className:"btn btn-sm btn-warning", disabled:true}, 'Report')
+          sentiment: tmp_src.sentiment == '' || tmp_src.sentiment == null ? 'N/A' : tmp_src.sentiment,
+          reporting: (<ReportWidget reporting={reporting.is_reported === true ? 'true' : currentlyReporting.includes(_dat[x].id) ? 'pending' : 'false'} tweetId={_dat[x].id} _id={'rw_' + x.toString()} />),
+
+
+
         });
       }
       setData({ columns: dataRep, rows: tmp });
@@ -239,7 +338,14 @@ function TweetList(props) {
     });
   }, []);
 
-  return <MDBDataTable striped bordered hover data={data} />;
+  return <div>   <ToastContainer
+    position="bottom-center"
+    className="toast-container"
+    theme="colored"
+  /><MDBDataTable striped bordered hover data={data} onPageChange={
+    (_data) => { }
+
+  } /></div>;
 }
 
 export default TweetList;

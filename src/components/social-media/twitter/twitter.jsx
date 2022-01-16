@@ -9,7 +9,7 @@ import eoap5q8gql11egl from "../../../assets/img/scraped/eoap5q8gql11egl.jpg";
 import tigraiadey from "../../../assets/img/scraped/tigraiadey.jpg";
 import shegerfm from "../../../assets/img/scraped/shegerfm.jpg";
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -31,7 +31,7 @@ class Twitter extends Component {
   onUsernameAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'username': e.target.username.value }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -48,7 +48,7 @@ class Twitter extends Component {
 
   onUsernameDeleteHandler = (item) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'username': item }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -66,7 +66,7 @@ class Twitter extends Component {
   fetchAndRenderData() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -99,7 +99,7 @@ class Twitter extends Component {
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.TWITTER_API_ROOT + '/twitter/all-users', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       console.log(response);
@@ -164,7 +164,7 @@ class Twitter extends Component {
           </h2>
         </div>
         <div className='row' style={{ maxHeight: "100vh", overflowY: "scroll" }}> {this.state.availablePages}</div>
-{/* 
+        {/* 
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
             <b>MOST POPULAR</b>

@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from "react";
 import { MDBDataTable } from "mdbreact";
 
 import axios from "axios";
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
 
 const dataRep = [
@@ -53,7 +53,7 @@ function CommentList(props) {
     useEffect(() => {
         axios.get(url, {
             headers: {
-                'x-access-token': getAccessToken()
+                'x-access-token': globalFunctions.getAccessToken()
             }
         }).then((response) => {
             //   console.log(response);

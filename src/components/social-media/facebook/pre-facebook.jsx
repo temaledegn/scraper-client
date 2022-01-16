@@ -11,7 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 
-import getAccessToken from "../../../common/GlobalsFunctions";
+import globalFunctions from "../../../common/GlobalsFunctions";
 
 class PreFacebook extends Component {
   state = {
@@ -31,7 +31,7 @@ class PreFacebook extends Component {
   onPageAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -48,7 +48,7 @@ class PreFacebook extends Component {
 
   onPageDeleteHandler = (item) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link': item }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -66,7 +66,7 @@ class PreFacebook extends Component {
   onUserAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -83,7 +83,7 @@ class PreFacebook extends Component {
 
   onUserDeleteHandler = (item) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': item }, {
-      headers: { 'x-access-token': getAccessToken() }
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
         if (response.data.type == 'success') {
@@ -103,7 +103,7 @@ class PreFacebook extends Component {
   fetchAndRenderDataPages() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -142,7 +142,7 @@ class PreFacebook extends Component {
   fetchAndRenderDataUser() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get', {
       headers: new Headers({
-        'x-access-token': getAccessToken(),
+        'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
@@ -196,7 +196,7 @@ class PreFacebook extends Component {
     }).then((jsonResponse) => {
       console.log(jsonResponse);
       const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
-        React.createElement('a', { href: '/facebook?id=' + item._id + '&type=page'}, item['date'])
+        React.createElement('a', { href: '/facebook?id=' + item._id + '&type=page' }, item['date'])
       ));
       this.setState({ groupsDates: list });
 
@@ -216,7 +216,7 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", margin:"5%"}}>
+        <div style={{ textAlign: "center", margin: "5%" }}>
           <h4>Click on a scraping date to continue!</h4>
           <br />
           <span>{this.state.usersDates}</span>
@@ -248,7 +248,7 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "10%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", marginTop:"5%" }}>
+        <div style={{ textAlign: "center", marginTop: "5%" }}>
           <h4>Click on a scraping date to continue!</h4>
           <br />
           <span>{this.state.groupsDates}</span>
@@ -266,7 +266,7 @@ class PreFacebook extends Component {
 
         <div style={{ margin: "5%" }}></div>
 
-        <div className="container" style={{ textAlign: 'center', marginBottom:"5%" }} id="add-requests-div">
+        <div className="container" style={{ textAlign: 'center', marginBottom: "5%" }} id="add-requests-div">
           <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
           <br />
 
@@ -274,7 +274,7 @@ class PreFacebook extends Component {
 
         </div>
 
- 
+
       </React.Fragment>
     );
   }
