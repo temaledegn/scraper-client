@@ -10,6 +10,59 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from "axios";
 
+
+class ReportWidget extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { reporting: props.reporting, contentId: props.contentId };
+  }
+
+  render() {
+    if (this.state.reporting == 'false') {
+      return React.createElement('button', { disabled: true, id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport(this.props._type, this.props.contentId, this) } }, 'Report');
+    } else if (this.state.reporting == 'pending') {
+      return React.createElement('span', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-spinner', style: { color: 'orange' } }, ''),
+        React.createElement('span', {}, ' Pending...')
+      );
+    } else if (this.state.reporting == 'true') {
+      return React.createElement('span', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-check-circle', style: { color: 'green' } }, ''),
+        React.createElement('span', {}, 'Reported')
+      );
+    } else {
+      return 'N/A';
+    }
+  };
+}
+
+
+let onHandleReport = (_type, _id, button) => {
+  axios.post(APIConstants.REQUESTS_API_ROOT + '/reporting/youtube/add', { 'reporting_data': _type + ',' + _id + ',' + globalFunctions.getUserId() }, {
+    headers: { 'x-access-token': globalFunctions.getAccessToken() }
+  })
+    .then((response) => {
+      if (response.data.type == 'success') {
+        toast.success(response.data.message);
+        button.setState({
+          reporting: 'pending'
+        });
+      } else if (response.data.type == 'warning') {
+        toast.warning(response.data.message);
+        button.setState({
+          reporting: 'pending'
+        });
+
+      } else if (response.data.type == 'error') {
+        toast.error(response.data.message);
+      }
+    });
+}
+
+
+let currentlyReporting = [];
+
 class Youtube extends Component {
 
   state = { availablePages: 'Loading . . .', collapseExpand: [] };
@@ -112,7 +165,7 @@ class Youtube extends Component {
   renderData() {
 
 
-    fetch(APIConstants.TWITTER_API_ROOT + '/youtube/all-videos', {
+    fetch(APIConstants.YOUTUBE_API_ROOT + '/youtube/all-videos', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
@@ -122,24 +175,34 @@ class Youtube extends Component {
     }).then((jsonResponse) => {
 
       const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-4', },
-        React.createElement('h4', {}, item.post[0]['title']),
+        React.createElement('h4', {}, item.title),
 
         React.createElement('a', { href: item.url }, item.url),
-
+        <br />,
+        <br />,
         React.createElement('p', {},
           React.createElement('b', {}, 'Number of Views:  '),
-          React.createElement('span', {}, item.post[0].numberofViews),
+          React.createElement('span', {}, item.views),
         ),
         React.createElement('p', {},
           React.createElement('b', {}, 'Number of Likes:  '),
-          React.createElement('span', {}, item.post[0].numberoflikes),
+          React.createElement('span', {}, item.likes),
         ),
 
         React.createElement('p', {},
           React.createElement('b', {}, 'Channel Name:  '),
-          React.createElement('a', { href: item.post[0].channel[0].channel_url }, item.post[0].channel[0].channel_name),
+          React.createElement('a', { href: item.channel.url }, item.channel.name),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Number of Subscribers:  '),
+          React.createElement('span', {}, item.channel.subscribers.replaceAll('subscribers', '')),
         ),
 
+
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Reporting:  '),
+          <ReportWidget reporting={item.reporting.is_reported === true ? 'true' : currentlyReporting.includes(item.url) ? 'pending' : 'false'} contentId={item.url} _type='video' />
+        ),
 
         React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/youtube/comments/?doc-id=' + item._id }, 'Go To Comments \u279c'
         ),

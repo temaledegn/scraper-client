@@ -56,10 +56,10 @@ function CommentList(props) {
                 'x-access-token': globalFunctions.getAccessToken()
             }
         }).then((response) => {
-            //   console.log(response);
+            console.log(response);
             let _dat = [];
             try {
-                _dat = response.data.post[0].comment;
+                _dat = response.data.comments;
             } catch (e) {
 
             }
@@ -72,7 +72,7 @@ function CommentList(props) {
                 tmp_src = _dat[x];
                 tmp.push({
                     number: x + 1,
-                    commenter: tmp_src.commenter_name,
+                    commenter: tmp_src.comment_name,
                     comment: tmp_src.comment,
                     sentiment: React.createElement('p', { color: 'grey' }, 'N/A'),
                     reporting: React.createElement('button', { className: "btn btn-sm btn-warning", disabled: true }, 'Report')

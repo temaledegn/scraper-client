@@ -4,7 +4,67 @@ import { MDBDataTable } from "mdbreact";
 import axios from "axios";
 import APIConstants from '../../../constants/constants';
 
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import globalFunctions from "../../../common/GlobalsFunctions";
+
+
+
+class ReportWidget extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { reporting: props.reporting, postId: props.tweetId };
+  }
+
+  render() {
+    if (this.state.reporting == 'false') {
+      return React.createElement('button', { disabled: true, id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport(this.props._type, this.props.postId, this) } }, 'Report');
+    } else if (this.state.reporting == 'pending') {
+      return React.createElement('span', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-spinner', style: { color: 'orange' } }, ''),
+        React.createElement('span', {}, ' Pending...')
+      );
+    } else if (this.state.reporting == 'true') {
+      return React.createElement('p', { id: this.props._id, },
+        React.createElement('i', { className: 'fa fa-check-circle', style: { color: 'green' } }, ''),
+        React.createElement('span', {}, 'Reported')
+      );
+    } else {
+      return 'N/A';
+    }
+  };
+}
+
+
+let onHandleReport = (_type, _id, button) => {
+  axios.post(APIConstants.REQUESTS_API_ROOT + '/reporting/facebook/add', { 'reporting_data': _type + ',' + _id + ',' + globalFunctions.getUserId() }, {
+    headers: { 'x-access-token': globalFunctions.getAccessToken() }
+  })
+    .then((response) => {
+      if (response.data.type == 'success') {
+        toast.success(response.data.message);
+        button.setState({
+          reporting: 'pending'
+        });
+      } else if (response.data.type == 'warning') {
+        toast.warning(response.data.message);
+        button.setState({
+          reporting: 'pending'
+        });
+
+      } else if (response.data.type == 'error') {
+        toast.error(response.data.message);
+      }
+    });
+}
+
+
+
 let data, setData;
+let currentlyReporting = [];
+
 const datetimeString = (
   <span>&nbsp;&nbsp;&nbsp;Date&nbsp;&amp;&nbsp;Time&nbsp;&nbsp;&nbsp;</span>
 );
@@ -85,7 +145,7 @@ class CommentSection extends Component {
             ></i>
           </a>
         </h6>
-        <p>{(typeof this.props.content === 'string' || this.props.content instanceof String) ? this.props.content.replace(this.props.commenter, ""):this.props.content}</p>
+        <p>{(typeof this.props.content === 'string' || this.props.content instanceof String) ? this.props.content.replace(this.props.commenter, "") : this.props.content}</p>
         <hr />
       </div>
     );
@@ -104,7 +164,7 @@ function CommentButton(props) {
           style={{ margin: "5% 0 0 0" }}
           onClick={() => {
             var url =
-              APIConstants.FB_GROUP_API_ROOT+"/api/pages/comments/" +
+              APIConstants.FB_GROUP_API_ROOT + "/api/pages/comments/" +
               props.doc_id +
               "/" +
               props.page_id +
@@ -112,7 +172,7 @@ function CommentButton(props) {
               props.post_id;
             if (props.type == 'user') {
               url =
-                APIConstants.FB_USER_API_ROOT+"/api/users/comments/" +
+                APIConstants.FB_USER_API_ROOT + "/api/users/comments/" +
                 props.doc_id +
                 "/" +
                 props.page_id +
@@ -121,7 +181,7 @@ function CommentButton(props) {
             }
 
             let post_id = props.post_id;
-            
+
             axios.get(url).then((response) => {
               let _dat = response.data;
               let commentList;
@@ -130,7 +190,7 @@ function CommentButton(props) {
                 if (data.rows[x].postId === post_id) {
                   commentList = _dat.map((_dat) => (
                     <CommentSection
-                      content={_dat.commentContent === undefined ? React.createElement('h4', { style: { color: 'grey' } }, '[Media Content]'): _dat.commentContent }
+                      content={_dat.commentContent === undefined ? React.createElement('h4', { style: { color: 'grey' } }, '[Media Content]') : _dat.commentContent}
                       commenter={_dat.commenterName}
                       commenter_profile={_dat.commentorId}
                     />
@@ -197,16 +257,36 @@ function PostList(props) {
   const type = queryParams.get('type');
 
 
-  var url = APIConstants.FB_GROUP_API_ROOT+"/api/pages/posts/" + doc_id + '/' + page_id;
+  var url = APIConstants.FB_GROUP_API_ROOT + "/api/pages/posts/" + doc_id + '/' + page_id;
   if (type == 'user') {
-    url = APIConstants.FB_USER_API_ROOT+"/api/users/posts/" + doc_id + '/' + page_id;
+    url = APIConstants.FB_USER_API_ROOT + "/api/users/posts/" + doc_id + '/' + page_id;
   }
 
+
   useEffect(() => {
+
+
+    axios.get(APIConstants.REQUESTS_API_ROOT + "/reporting/facebook/get", {
+      headers: {
+        'x-access-token': globalFunctions.getAccessToken()
+      }
+    }).then((response) => {
+      // let reporting_list = response.data;
+      let reporting_fb_ids = response.data.map((item) => {
+        return item.split(',')[1];
+      })
+      currentlyReporting.push(...reporting_fb_ids);
+    });
+
+
     axios.get(url).then((response) => {
       let _dat = response.data;
       let tmp = [];
+
+
       for (let x = 0; x < _dat.length; x++) {
+        let reporting = _dat[x].reporting;
+        console.log(reporting);
         tmp.push({
           postId: _dat[x]._id,
           number: x + 1,
@@ -227,8 +307,8 @@ function PostList(props) {
               <CommentButton doc_id={doc_id} page_id={page_id} post_id={_dat[x]._id} type={type} />
             </div>
           ),
-          sentiment:'N/A',
-          reporting: React.createElement('button', {className:"btn btn-sm btn-warning", disabled:true}, 'Report')
+          sentiment: 'N/A',
+          reporting: (<ReportWidget reporting={reporting.is_reported === true ? 'true' : currentlyReporting.includes(_dat[x].postId) ? 'pending' : 'false'} postId={_dat[x].postId} _id={'rw_' + x.toString()} _type='post' />)
         });
       }
       setData({ columns: dataRep, rows: tmp });
@@ -236,7 +316,16 @@ function PostList(props) {
     });
   }, []);
 
-  return <MDBDataTable striped bordered hover data={data} />;
+  // return <MDBDataTable striped bordered hover data={data} />;
+  return <div>
+    <ToastContainer
+      position="bottom-center"
+      className="toast-container"
+      theme="colored"
+    />
+    <MDBDataTable striped bordered hover data={data} />
+
+  </div>;
 }
 
 export default PostList;
