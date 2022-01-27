@@ -180,7 +180,11 @@ class PreFacebook extends Component {
 
 
   fetchAndRenderData() {
-    fetch(APIConstants.FB_USER_API_ROOT + '/api/users/dates').then((response) => {
+    fetch(APIConstants.FB_USER_API_ROOT + '/api/users/dates', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
       console.log(jsonResponse);
@@ -191,7 +195,11 @@ class PreFacebook extends Component {
 
     });
 
-    fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/dates').then((response) => {
+    fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/dates', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
       console.log(jsonResponse);
