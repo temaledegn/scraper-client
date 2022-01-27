@@ -4,6 +4,8 @@ import { MDBDataTable } from "mdbreact";
 import axios from "axios";
 import APIConstants from "../../../constants/constants";
 
+import globalFunctions from "../../../common/GlobalsFunctions";
+
 function UserLink(props) {
   const linkString = "/facebook/page/" + props.username;
   const linkStringx = props.pageLink;
