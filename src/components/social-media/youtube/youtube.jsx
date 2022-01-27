@@ -104,7 +104,7 @@ class Youtube extends Component {
   // }
 
   onlinkDeleteHandler = (link) => {
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/delete', { 'link': link }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/youtube/delete', { 'link': link }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -121,7 +121,7 @@ class Youtube extends Component {
 
 
   fetchAndRenderData() {
-    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/linkedin/get', {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/youtube/get', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
@@ -146,7 +146,7 @@ class Youtube extends Component {
 
 
   fetchAndRenderDataAvailable() {
-    fetch(APIConstants.LINKEDIN_API_ROOT + '/linkedin/all-scraped', {
+    fetch(APIConstants.YOUTUBE_API_ROOT + '/youtube/all-videos', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
@@ -258,11 +258,7 @@ class Youtube extends Component {
         </div>
 
 
-        {/* <div>
-          <h4 style={{ color: "#444444" }}>CURRENTLY SCRAPING</h4>
-          <p>The linkedin scraper is currently working on the following links</p>
-          {this.state.currentlyScraping}
-        </div> */}
+
         <div style={{ margin: "5%" }}></div>
 
         <div style={{ textAlign: 'center' }} id="add-requests-div">
