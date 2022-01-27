@@ -182,7 +182,9 @@ function CommentButton(props) {
 
             let post_id = props.post_id;
 
-            axios.get(url).then((response) => {
+            axios.get(url, {
+              headers: { 'x-access-token': globalFunctions.getAccessToken() }
+            }).then((response) => {
               let _dat = response.data;
               let commentList;
 
@@ -279,7 +281,9 @@ function PostList(props) {
     });
 
 
-    axios.get(url).then((response) => {
+    axios.get(url, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    }).then((response) => {
       let _dat = response.data;
       let tmp = [];
 

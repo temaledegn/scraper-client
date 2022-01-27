@@ -111,7 +111,7 @@ function CommentButton(props) {
           style={{ margin: "5% 0 0 0" }}
           onClick={() => {
             var url =
-              APIConstants.FB_GROUP_API_ROOT+"/api/pages/comments/" +
+              APIConstants.FB_GROUP_API_ROOT + "/api/pages/comments/" +
               props.doc_id +
               "/" +
               props.page_id +
@@ -119,7 +119,7 @@ function CommentButton(props) {
               props.post_id;
             if (props.type == 'user') {
               url =
-                APIConstants.FB_USER_API_ROOT+"/api/users/comments/" +
+                APIConstants.FB_USER_API_ROOT + "/api/users/comments/" +
                 props.doc_id +
                 "/" +
                 props.page_id +
@@ -129,7 +129,9 @@ function CommentButton(props) {
 
             let post_id = props.post_id;
 
-            axios.get(url).then((response) => {
+            axios.get(url, {
+              headers: { 'x-access-token': globalFunctions.getAccessToken() }
+            }).then((response) => {
               let _dat = response.data;
               let commentList;
 
@@ -197,30 +199,32 @@ function PostSearchResult(props) {
   const [loading, setLoading] = useState(true);
   [data, setData] = useState();
   let keyword = props.searchQuery;
-  var url = APIConstants.FB_GROUP_API_ROOT+'/api/pages/search/' + props.doc_id + '/search?q=' + keyword;
+  var url = APIConstants.FB_GROUP_API_ROOT + '/api/pages/search/' + props.doc_id + '/search?q=' + keyword;
   if (props.type == 'user') {
-    url = APIConstants.FB_USER_API_ROOT+'/api/users/search/' + props.doc_id + '/search?q=' + keyword;
+    url = APIConstants.FB_USER_API_ROOT + '/api/users/search/' + props.doc_id + '/search?q=' + keyword;
   }
 
   useEffect(() => {
-    axios.get(url).then((response) => {
+    axios.get(url, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    }).then((response) => {
       let _dat = response.data;
       let __dat;
       let tmp = [];
       // This is done coz of empty posts from a page
       let postCount = 0;
 
-     // console.log(_dat);
+      // console.log(_dat);
       for (let x = 0; x < _dat.length; x++) {
         __dat = _dat[x];
         let name = __dat.groupName;
         let nameLink = "/facebook/page/" + name + "/";
         let fbLink = __dat.facebookLink;
         try {
-            fbLink = __dat.groupLink.replace("m.facebook", "www.facebook");
+          fbLink = __dat.groupLink.replace("m.facebook", "www.facebook");
         } catch (e) {
           name = __dat.userName;
-          fbLink =  __dat.userLink.replace("m.facebook", "www.facebook");
+          fbLink = __dat.userLink.replace("m.facebook", "www.facebook");
         }
 
         tmp.push({

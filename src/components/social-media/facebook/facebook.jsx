@@ -100,7 +100,11 @@ class Facebook extends Component {
 
 
     if (type == 'page') {
-      fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/onlygroups/' + id).then((response) => {
+      fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/onlygroups/' + id, {
+        headers: new Headers({
+          'x-access-token': globalFunctions.getAccessToken(),
+        })
+      }).then((response) => {
         return response.json();
       }).then((jsonResponse) => {
 
@@ -128,7 +132,11 @@ class Facebook extends Component {
 
       });
     } else if (type == 'user') {
-      fetch(APIConstants.FB_USER_API_ROOT + '/api/users/onlygroups/' + id).then((response) => {
+      fetch(APIConstants.FB_USER_API_ROOT + '/api/users/onlygroups/' + id, {
+        headers: new Headers({
+          'x-access-token': globalFunctions.getAccessToken(),
+        })
+      }).then((response) => {
         return response.json();
       }).then((jsonResponse) => {
 
