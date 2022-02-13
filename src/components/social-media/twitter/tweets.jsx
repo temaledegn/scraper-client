@@ -157,6 +157,14 @@ class ReplySection extends Component {
         <br />
         <br />
         <b style={{ color: '#888' }}>Reporting:</b>&emsp;<ReportWidget reporting={this.props.reporting === true ? 'true' : currentlyReporting.includes(this.props.tweetId) ? 'pending' : 'false'} tweetId={this.props.tweetId} _type='reply' />
+        <br />
+        <br />
+        <p><b style={{ color: '#888' }}>More Actions:</b></p>
+        <div className="row">
+          <div className="col-md-4"><i className="fa fa-comment-o" onClick={() => alert('Not Supported YET')}></i></div>
+          <div className="col-md-4"><i className="fa-light fa fa-retweet" onClick={() => alert('Not Supported YET')}></i></div>
+          <div className="col-md-4"><i className="fa fa-heart-o" onClick={() => alert('Not Supported YET')}></i></div>
+        </div>
         <hr />
       </div>
     );
@@ -299,7 +307,15 @@ function TweetList(props) {
         tmp.push({
           tweetID: _dat[x].id,
           number: x + 1,
-          content: tmp_src.tweet,
+          content: (<div>
+            <div>{tmp_src.tweet}</div>
+            <br />
+            <div className="row">
+              <div className="col-md-4"><i className="fa fa-comment-o" onClick={() => alert('Not Supported YET')}></i></div>
+              <div className="col-md-4"><i className="fa-light fa fa-retweet" onClick={() => alert('Not Supported YET')}></i></div>
+              <div className="col-md-4"><i className="fa fa-heart-o" onClick={() => alert('Not Supported YET')}></i></div>
+            </div>
+          </div>),
           likes: parseInt(tmp_src.likes_count),
           hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
             React.createElement('a', { href: 'https://twitter.com/hashtag/' + item + '?src=hashtag_click', target: '_blank' }, '#' + item))),

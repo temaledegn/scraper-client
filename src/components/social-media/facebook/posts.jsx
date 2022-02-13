@@ -146,6 +146,10 @@ class CommentSection extends Component {
           </a>
         </h6>
         <p>{(typeof this.props.content === 'string' || this.props.content instanceof String) ? this.props.content.replace(this.props.commenter, "") : this.props.content}</p>
+        <div className="row">
+          <div className="col-md-6" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-thumbs-up"></i>&emsp;Like</button></div>
+          <div className="col-md-6" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-reply"></i>&emsp;Reply</button></div>
+        </div>
         <hr />
       </div>
     );
@@ -294,7 +298,16 @@ function PostList(props) {
         tmp.push({
           postId: _dat[x]._id,
           number: x + 1,
-          content: _dat[x].postContent == '' ? React.createElement('h4', { style: { color: 'grey' } }, '[Media Content]') : _dat[x].postContent,
+          content: _dat[x].postContent == '' ? React.createElement('h4', { style: { color: 'grey' } }, '[Media Content]') : (<div>
+            {_dat[x].postContent}
+            <br />
+            <br />
+            <div className="row">
+              <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-thumbs-up"></i>&emsp;Like</button></div>
+              <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-comment"></i>&emsp;Comment</button></div>
+              <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-share"></i>&emsp;Share</button></div>
+            </div>
+          </div>),
 
           likes: parseInt(_dat[x].numberOfLikes),
           shares: parseInt(_dat[x].numberOfShares.slice(0, -6)),
