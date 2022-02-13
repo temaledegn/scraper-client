@@ -73,7 +73,17 @@ function CommentList(props) {
                 tmp.push({
                     number: x + 1,
                     commenter: tmp_src.comment_name,
-                    comment: tmp_src.comment,
+                    comment: (<div>{tmp_src.comment}
+                        <br />
+                        <br />
+                        <div className="row">
+                            <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-thumbs-up"></i>&emsp;Like</button></div>
+                            <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-thumbs-down"></i>&emsp;Dislike</button></div>
+                            <div className="col-md-4" style={{ textAlign: "center" }}><button className="btn" onClick={() => alert('Not Supported YET')}><i className="fa fa-reply"></i>&emsp;Reply</button></div>
+                        </div>
+
+
+                    </div>),
                     sentiment: React.createElement('p', { color: 'grey' }, 'N/A'),
                     reporting: React.createElement('button', { className: "btn btn-sm btn-warning", disabled: true }, 'Report')
                 });
