@@ -294,7 +294,9 @@ function PostList(props) {
 
       for (let x = 0; x < _dat.length; x++) {
         let reporting = _dat[x].reporting;
-        console.log(reporting);
+        if (reporting === null) {
+          reporting = { is_reported: false, reported_by: null, reported_by: null };
+        }
         tmp.push({
           postId: _dat[x]._id,
           number: x + 1,
