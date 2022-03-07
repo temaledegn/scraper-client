@@ -101,7 +101,6 @@ class Linkedin extends Component {
       return response.json();
     }).then((jsonResponse) => {
       this.data = jsonResponse;
-      console.log(this.data);
       this.state.collapseExpand = [...Array(jsonResponse.length).keys()].map((item) => false);
       // alert(this.state.collapseExpand.toString())
       this.renderData();

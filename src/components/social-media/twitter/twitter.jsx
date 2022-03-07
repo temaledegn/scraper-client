@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 
 import CommonComponents from "../../common/common";
+import { Collapse } from "react-collapse";
 
-import realdonaldtrump from "../../../assets/img/scraped/realdonaldtrump.jpg";
-import tigraywillwin from "../../../assets/img/scraped/tigraywillwin.jpg";
-import h8oicpmj5cu21ws from "../../../assets/img/scraped/h8oicpmj5cu21ws.jpg";
-import eoap5q8gql11egl from "../../../assets/img/scraped/eoap5q8gql11egl.jpg";
-import tigraiadey from "../../../assets/img/scraped/tigraiadey.jpg";
-import shegerfm from "../../../assets/img/scraped/shegerfm.jpg";
+// import realdonaldtrump from "../../../assets/img/scraped/realdonaldtrump.jpg";
+// import tigraywillwin from "../../../assets/img/scraped/tigraywillwin.jpg";
+// import h8oicpmj5cu21ws from "../../../assets/img/scraped/h8oicpmj5cu21ws.jpg";
+// import eoap5q8gql11egl from "../../../assets/img/scraped/eoap5q8gql11egl.jpg";
+// import tigraiadey from "../../../assets/img/scraped/tigraiadey.jpg";
+// import shegerfm from "../../../assets/img/scraped/shegerfm.jpg";
 
 import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
@@ -19,8 +20,12 @@ import axios from "axios";
 class Twitter extends Component {
   state = {
     currentlyScraping: [],
-    availablePages: 'Loading . . .'
+    availablePages: 'Loading . . .',
+    datesCollapseExpand: []
   };
+
+  static data = [];
+  static dateData = {};
 
   componentWillMount() {
     this.fetchAndRenderData();
@@ -71,29 +76,27 @@ class Twitter extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      // const list =
-      //   React.createElement('div', {},
-      //     React.createElement('ul', {},
-      //       jsonResponse.map((item) => React.createElement('li', {},
-      //         React.createElement('form', { method: 'POST', onSubmit: this.onUsernameDeleteHandler },
-      //           React.createElement('a', { href: 'https://www.twitter.com/' + item, target: '_blank' }, item),
-      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-      //           React.createElement('div', {}),
-      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, 'Delete')),
-      //         React.createElement('div', {})))
-      //     )
-      //   );
-
 
       const list = jsonResponse.map((item, index) => {
         return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUsernameDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://www.twitter.com/@' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
       });
-
-
-
-
       this.setState({ currentlyScraping: list });
     });
+
+
+  }
+
+
+  updateShowCollapse(index) {
+    for (var i = 0; i < index; i++) {
+      this.state.collapseExpand[i] = false;
+    }
+    for (var i = index + 1; i < this.state.collapseExpand.length; i++) {
+      this.state.collapseExpand[i] = false;
+    }
+
+    this.state.collapseExpand[index] = !this.state.collapseExpand[index];
+    this.renderData();
   }
 
   fetchAndRenderDataAvailable() {
@@ -102,48 +105,77 @@ class Twitter extends Component {
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
-      console.log(response);
       return response.json();
     }).then((jsonResponse) => {
-
-      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-3', },
-        React.createElement('h5', {}, item.Fullname + ' ON ' + item.Date_of_Scraping),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Username: '),
-          React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'About: '),
-          React.createElement('span', {}, item.Description),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Tweets: '),
-          React.createElement('span', {}, item.Tweets),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Followers: '),
-          React.createElement('span', {}, item['Number of Followers']),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Following: '),
-          React.createElement('span', {}, item['Number of Followings']),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Joined Date: '),
-          React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
-        ),
-        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/twitter/page/' + item.UserName.substring(1) + '?doc-id=' + item._id }, 'Go To Tweets \u279c'
-        ),
-        React.createElement('div', { style: { marginTop: "15%" } })
-      ));
+      const emptyUsernameRemoved = jsonResponse.filter(item => (item.UserName != '' && item.UserName != null));
 
 
+      var indexedUsernames = [];
+      var scrapingDates = {};
+      var uniqueUsernameData = [];
 
+      jsonResponse.map((response) => {
+        if (indexedUsernames.includes(response.UserName)) {
+          scrapingDates[response.UserName].push({ "date": response.Date_of_Scraping, "id": response._id });
+        } else {
+          scrapingDates[response.UserName] = [{ "date": response.Date_of_Scraping, "id": response._id }];
+          indexedUsernames.push(response.UserName);
+          uniqueUsernameData.push(response);
+        }
+      });
+      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
 
-
-      this.setState({ availablePages: list });
+      this.data = JSON.parse(JSON.stringify(uniqueUsernameData));
+      this.dateData = JSON.parse(JSON.stringify(scrapingDates));
+      this.renderData();
 
     });
+  }
+
+  renderData() {
+    var widgets = {};
+
+    for (const [key, value] of Object.entries(this.dateData)) {
+      var tmpWidget = [];
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : item.date.replace('T', ' ').replace('Z', ' ')))));
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+    }
+
+    const list = this.data.map((item, i) => React.createElement('div', { className: 'col-md-3', },
+      React.createElement('h5', {}, React.createElement('b', {}, item.Fullname)),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Username: '),
+        React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'About: '),
+        React.createElement('span', {}, item.Description),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Tweets: '),
+        React.createElement('span', {}, item.Tweets),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Followers: '),
+        React.createElement('span', {}, item['Number of Followers']),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Following: '),
+        React.createElement('span', {}, item['Number of Followings']),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Joined Date: '),
+        React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
+      ),
+      React.createElement('a', { onClick: () => this.updateShowCollapse(i), href: "#?" }, this.state.collapseExpand[i] ? 'Hide Scraping Dates \u25b2' : 'Show Scraping Dates \u25bc'),
+
+      React.createElement(Collapse, { isOpened: this.state.collapseExpand[i] },
+        widgets[item.UserName]
+      ),
+
+      React.createElement('div', { style: { marginTop: "15%" } })
+    ));
+    this.setState({ availablePages: list });
   }
 
   render() {

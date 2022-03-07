@@ -22,7 +22,13 @@ class PreTelegram extends Component {
     currentlyScrapingGroup: [],
     channelUsername: "",
     groupUsername: "",
+    collapseExpand: [],
   };
+
+  static channelData = [];
+  static channelDateData = {};
+  static groupData = [];
+  static groupDateData = {};
 
   componentWillMount() {
     this.fetchAndRenderDataScraping();
@@ -67,8 +73,6 @@ class PreTelegram extends Component {
       });
   }
 
-
-
   onGroupAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/add', { 'username': e.target.username.value }, {
@@ -106,6 +110,7 @@ class PreTelegram extends Component {
         this.fetchAndRenderDataScraping();
       });
   }
+
   fetchAndRenderDataScraping() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/get', {
       headers: new Headers({
@@ -158,6 +163,49 @@ class PreTelegram extends Component {
     });
   }
 
+  renderChannelData() {
+
+    var widgets = {};
+
+    for (const [key, value] of Object.entries(this.channelDateData)) {
+      var tmpWidget = [];
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=channel' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString()))));
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+    }
+
+
+
+    const list = this.channelData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-3", textAlign: "center" },
+      React.createElement('img', { src: imgTgChannel, width: "150px", style: { borderRadius: "50%" } }),
+      React.createElement('br'),
+      React.createElement('h4', {}, item['channel_username']),
+      widgets[item.channel_username],
+    ));
+    this.setState({ channelsScraped: list });
+  }
+
+  renderGroupData() {
+
+
+    var widgets = {};
+
+    for (const [key, value] of Object.entries(this.groupDateData)) {
+      var tmpWidget = [];
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=group' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString()))));
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+    }
+
+
+
+    const list = this.groupData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-3", textAlign: "center" },
+      React.createElement('img', { src: imgTgGroup, width: "150px", style: { borderRadius: "50%" } }),
+      React.createElement('br'),
+      React.createElement('h4', {}, item['group_username']),
+      widgets[item.group_username],
+    ));
+    this.setState({ groupsScraped: list });
+  }
+
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.TELEGRAM_API_ROOT + '/telegram/channel/all-scraped', {
       headers: new Headers({
@@ -166,13 +214,43 @@ class PreTelegram extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-2" },
-        React.createElement('img', { src: imgTgChannel, width: "100px", style: { borderRadius: "50%" } }),
-        React.createElement('a', { href: '/telegram?id=' + item['_id'] + '&type=channel' }, item['channel_username']), React.createElement('p', {}, new Date(item['date_of_scrapting']).toDateString())
-      ));
-      this.setState({ channelsScraped: list });
+
+
+
+      var indexedUsernames = [];
+      var scrapingDates = {};
+      var uniqueUsernameData = [];
+
+      // {
+      //   channel_username: "tikvahethiopia"
+      //   date_of_scrapting: "2022-02-08T16:34:40.281Z"
+      //   _id: "62027170237dfd5dfe320487"
+      // }
+
+      jsonResponse.map((response) => {
+        if (indexedUsernames.includes(response.channel_username)) {
+          scrapingDates[response.channel_username].push({ "date": response.date_of_scrapting, "id": response._id });
+        } else {
+          scrapingDates[response.channel_username] = [{ "date": response.date_of_scrapting, "id": response._id }];
+          indexedUsernames.push(response.channel_username);
+          uniqueUsernameData.push(response);
+        }
+      });
+
+      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
+
+      this.channelData = JSON.parse(JSON.stringify(uniqueUsernameData));
+      this.channelDateData = JSON.parse(JSON.stringify(scrapingDates));
+      this.renderChannelData();
+
 
     });
+
+
+
+
+
+
 
     fetch(APIConstants.TELEGRAM_API_ROOT + '/telegram/group/all-scraped', {
       headers: new Headers({
@@ -181,11 +259,34 @@ class PreTelegram extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const list = jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-2" },
-        React.createElement('img', { src: imgTgGroup, width: "100px", style: { borderRadius: "50%" } }),
-        React.createElement('a', { href: '/telegram?id=' + item._id + '&type=group' }, item['group_username']), React.createElement('p', {}, new Date(item['date_of_scrapting']).toDateString())
-      ));
-      this.setState({ groupsScraped: list });
+
+
+      var indexedUsernames = [];
+      var scrapingDates = {};
+      var uniqueUsernameData = [];
+
+      // {
+      //   channel_username: "tikvahethiopia"
+      //   date_of_scrapting: "2022-02-08T16:34:40.281Z"
+      //   _id: "62027170237dfd5dfe320487"
+      // }
+
+      jsonResponse.map((response) => {
+        if (indexedUsernames.includes(response.group_username)) {
+          scrapingDates[response.group_username].push({ "date": response.date_of_scrapting, "id": response._id });
+        } else {
+          scrapingDates[response.group_username] = [{ "date": response.date_of_scrapting, "id": response._id }];
+          indexedUsernames.push(response.group_username);
+          uniqueUsernameData.push(response);
+        }
+      });
+
+      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
+
+      this.groupData = JSON.parse(JSON.stringify(uniqueUsernameData));
+      this.groupDateData = JSON.parse(JSON.stringify(scrapingDates));
+      this.renderGroupData();
+
 
     });
   }

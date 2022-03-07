@@ -56,10 +56,10 @@ function CommentList(props) {
                 'x-access-token': globalFunctions.getAccessToken()
             }
         }).then((response) => {
-            console.log(response);
+            // console.log(response);
             let _dat = [];
             try {
-                _dat = response.data.comments;
+                _dat = response.data.comments[0];
             } catch (e) {
 
             }
