@@ -114,7 +114,7 @@ class Twitter extends Component {
       var scrapingDates = {};
       var uniqueUsernameData = [];
 
-      jsonResponse.map((response) => {
+      emptyUsernameRemoved.map((response) => {
         if (indexedUsernames.includes(response.UserName)) {
           scrapingDates[response.UserName].push({ "date": response.Date_of_Scraping, "id": response._id });
         } else {
@@ -137,7 +137,7 @@ class Twitter extends Component {
 
     for (const [key, value] of Object.entries(this.dateData)) {
       var tmpWidget = [];
-      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : item.date.replace('T', ' ').replace('Z', ' ')))));
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
       widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 

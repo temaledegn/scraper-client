@@ -18,6 +18,7 @@ class ReportWidget extends React.Component {
     this.state = { reporting: props.reporting, contentId: props.contentId };
   }
 
+
   render() {
     if (this.state.reporting == 'false') {
       return React.createElement('button', { disabled: true, id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport(this.props._type, this.props.contentId, this) } }, 'Report');
@@ -65,13 +66,13 @@ let currentlyReporting = [];
 
 class Youtube extends Component {
 
-  state = { availablePages: 'Loading . . .', collapseExpand: [] };
-
   static data = [];
+  static dateData = [];
 
   state = {
     currentlyScraping: [],
-    availablePages: 'Loading . . .'
+    availablePages: 'Loading . . .',
+    datesCollapseExpand: [],
   };
 
   componentWillMount() {
@@ -140,7 +141,7 @@ class Youtube extends Component {
   }
 
   updateShowCollapse(index) {
-    this.state.collapseExpand[index] = !this.state.collapseExpand[index];
+    this.state.datesCollapseExpand[index] = !this.state.datesCollapseExpand[index];
     this.renderData();
   }
 
@@ -153,10 +154,26 @@ class Youtube extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      this.data = jsonResponse;
-      console.log(this.data);
-      this.state.collapseExpand = [...Array(jsonResponse.length).keys()].map((item) => false);
-      // alert(this.state.collapseExpand.toString())
+
+      var indexedUrls = [];
+      var scrapingDates = {};
+      var uniqueUrlData = [];
+
+      jsonResponse.map((response) => {
+        if (indexedUrls.includes(response.url)) {
+          scrapingDates[response.url].push({ "date": response.date_of_scraping, "id": response._id });
+        } else {
+          scrapingDates[response.url] = [{ "date": response.date_of_scraping, "id": response._id }];
+          indexedUrls.push(response.url);
+          uniqueUrlData.push(response);
+        }
+      });
+      this.state.datesCollapseExpand = [...Array(indexedUrls.length).keys()].map((item) => false);
+
+      this.data = JSON.parse(JSON.stringify(uniqueUrlData));
+      this.dateData = JSON.parse(JSON.stringify(scrapingDates));
+
+
       this.renderData();
 
     });
@@ -164,17 +181,25 @@ class Youtube extends Component {
 
   renderData() {
 
+    var widgets = {};
+
+    for (const [key, value] of Object.entries(this.dateData)) {
+      var tmpWidget = [];
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/youtube/comments/?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : item.date))));
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+    }
+
+
 
     fetch(APIConstants.YOUTUBE_API_ROOT + '/youtube/all-videos', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
-      console.log(response);
       return response.json();
     }).then((jsonResponse) => {
 
-      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-4', },
+      const list = jsonResponse.map((item, i) => React.createElement('div', { className: 'col-md-4', },
         React.createElement('h4', {}, item.title),
 
         React.createElement('a', { href: item.url }, item.url),
@@ -191,7 +216,7 @@ class Youtube extends Component {
 
         React.createElement('p', {},
           React.createElement('b', {}, 'Channel Name:  '),
-          React.createElement('a', { href: item.channel.url }, item.channel.name),
+          React.createElement('a', { href: item.channel.channel_url, target: '?' }, item.channel.channel_name),
         ),
         React.createElement('p', {},
           React.createElement('b', {}, 'Number of Subscribers:  '),
@@ -204,7 +229,12 @@ class Youtube extends Component {
           <ReportWidget reporting={item.reporting.is_reported === true ? 'true' : currentlyReporting.includes(item.url) ? 'pending' : 'false'} contentId={item.url} _type='video' />
         ),
 
-        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/youtube/comments/?doc-id=' + item._id }, 'Go To Comments \u279c'
+
+
+        React.createElement('a', { onClick: () => this.updateShowCollapse(i), href: "#?" }, this.state.datesCollapseExpand[i] ? 'Hide Scraping Dates \u25b2' : 'Show Scraping Dates \u25bc'),
+
+        React.createElement(Collapse, { isOpened: this.state.datesCollapseExpand[i] },
+          widgets[item.url]
         ),
 
 

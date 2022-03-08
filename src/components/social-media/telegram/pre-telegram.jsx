@@ -1,5 +1,7 @@
 import React, { Component, useState } from "react";
 
+import { Collapse } from "react-collapse";
+
 import CommonComponents from "../../common/common";
 import axios from "axios";
 import imgTgGroup from "../../../assets/img/telegramGroup.png";
@@ -22,7 +24,8 @@ class PreTelegram extends Component {
     currentlyScrapingGroup: [],
     channelUsername: "",
     groupUsername: "",
-    collapseExpand: [],
+    collapseExpandChannel: [],
+    collapseExpandGroup: []
   };
 
   static channelData = [];
@@ -163,24 +166,74 @@ class PreTelegram extends Component {
     });
   }
 
+  updateShowCollapse(index, type) {
+    if (type == 'channel') {
+      for (var i = 0; i < index; i++) {
+        this.state.collapseExpandChannel[i] = false;
+      }
+      for (var i = index + 1; i < this.state.collapseExpandChannel.length; i++) {
+        this.state.collapseExpandChannel[i] = false;
+      }
+
+      this.state.collapseExpandChannel[index] = !this.state.collapseExpandChannel[index];
+      this.renderChannelData();
+    } else if (type == 'group') {
+
+      for (var i = 0; i < index; i++) {
+        this.state.collapseExpandGroup[i] = false;
+      }
+      for (var i = index + 1; i < this.state.collapseExpandGroup.length; i++) {
+        this.state.collapseExpandGroup[i] = false;
+      }
+
+      this.state.collapseExpandGroup[index] = !this.state.collapseExpandGroup[index];
+      this.renderGroupData();
+    }
+  }
+
   renderChannelData() {
 
     var widgets = {};
 
+    // [...dateJobMap.keys()].map(jobsForDate =>
+    //   jobsForDate.map(job => (
+    //     <TruckJobComp job={job} />
+    //   ))
+    // )
+
+    // this.channelDateData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1);
+
     for (const [key, value] of Object.entries(this.channelDateData)) {
       var tmpWidget = [];
-      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=channel' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString()))));
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=channel' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
       widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 
 
 
-    const list = this.channelData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-3", textAlign: "center" },
-      React.createElement('img', { src: imgTgChannel, width: "150px", style: { borderRadius: "50%" } }),
-      React.createElement('br'),
-      React.createElement('h4', {}, item['channel_username']),
-      widgets[item.channel_username],
-    ));
+    const list = this.channelData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item, i) => {
+      var itemDateData = this.channelDateData[item.channel_username];
+      return React.createElement('div', { className: "col-md-3", textAlign: "center" },
+        React.createElement('img', { src: imgTgChannel, width: "150px", style: { borderRadius: "50%" } }),
+        React.createElement('br'),
+        React.createElement('h4', {}, item['channel_username']),
+
+
+        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.channel_username]).length
+          + ' times from ',
+          React.createElement('a', { href: '/telegram?id=' + itemDateData[itemDateData.length - 1]['id'] + '&type=channel' }, new Date(itemDateData[itemDateData.length - 1]['date']).toDateString()),
+          React.createElement('span', {}, ' to '),
+          React.createElement('a', { href: '/telegram?id=' + itemDateData[0]['id'] + '&type=channel' }, new Date(itemDateData[0]['date']).toDateString())) : React.createElement('span', {}, ''),
+
+
+
+        React.createElement('a', { onClick: () => this.updateShowCollapse(i, 'channel'), href: "#?" }, this.state.collapseExpandChannel[i] ? 'Hide Scraping Dates \u25b2' : 'Show All Scraping Dates \u25bc'),
+
+        React.createElement(Collapse, { isOpened: this.state.collapseExpandChannel[i] },
+          widgets[item.channel_username]
+        ),
+      )
+    });
     this.setState({ channelsScraped: list });
   }
 
@@ -191,18 +244,38 @@ class PreTelegram extends Component {
 
     for (const [key, value] of Object.entries(this.groupDateData)) {
       var tmpWidget = [];
-      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=group' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString()))));
+      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=group' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
       widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 
 
 
-    const list = this.groupData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item) => React.createElement('div', { className: "col-md-3", textAlign: "center" },
-      React.createElement('img', { src: imgTgGroup, width: "150px", style: { borderRadius: "50%" } }),
-      React.createElement('br'),
-      React.createElement('h4', {}, item['group_username']),
-      widgets[item.group_username],
-    ));
+    const list = this.groupData.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1).map((item, i) => {
+      var itemDateData = this.groupDateData[item.group_username];
+      return React.createElement('div', { className: "col-md-3", textAlign: "center" },
+        React.createElement('img', { src: imgTgGroup, width: "150px", style: { borderRadius: "50%" } }),
+        React.createElement('br'),
+        React.createElement('h4', {}, item['group_username']),
+
+        React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.group_username]).length + ' times'),
+
+
+        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.group_username]).length
+          + ' times from ',
+          React.createElement('a', { href: '/telegram?id=' + itemDateData[itemDateData.length - 1]['id'] + '&type=group' }, new Date(itemDateData[itemDateData.length - 1]['date']).toDateString()),
+          React.createElement('span', {}, ' to '),
+          React.createElement('a', { href: '/telegram?id=' + itemDateData[0]['id'] + '&type=group' }, new Date(itemDateData[0]['date']).toDateString())) : React.createElement('span', {}, ''),
+
+
+
+
+        React.createElement('a', { onClick: () => this.updateShowCollapse(i, 'group'), href: "#?" }, this.state.collapseExpandGroup[i] ? 'Hide Scraping Dates \u25b2' : 'Show All Scraping Dates \u25bc'),
+
+        React.createElement(Collapse, { isOpened: this.state.collapseExpandGroup[i] },
+          widgets[item.group_username]
+        ),
+      );
+    });
     this.setState({ groupsScraped: list });
   }
 
@@ -221,12 +294,7 @@ class PreTelegram extends Component {
       var scrapingDates = {};
       var uniqueUsernameData = [];
 
-      // {
-      //   channel_username: "tikvahethiopia"
-      //   date_of_scrapting: "2022-02-08T16:34:40.281Z"
-      //   _id: "62027170237dfd5dfe320487"
-      // }
-
+      jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1);
       jsonResponse.map((response) => {
         if (indexedUsernames.includes(response.channel_username)) {
           scrapingDates[response.channel_username].push({ "date": response.date_of_scrapting, "id": response._id });
@@ -237,7 +305,7 @@ class PreTelegram extends Component {
         }
       });
 
-      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
+      this.state.collapseExpandChannel = [...Array(indexedUsernames.length).keys()].map((item) => false);
 
       this.channelData = JSON.parse(JSON.stringify(uniqueUsernameData));
       this.channelDateData = JSON.parse(JSON.stringify(scrapingDates));
@@ -265,12 +333,7 @@ class PreTelegram extends Component {
       var scrapingDates = {};
       var uniqueUsernameData = [];
 
-      // {
-      //   channel_username: "tikvahethiopia"
-      //   date_of_scrapting: "2022-02-08T16:34:40.281Z"
-      //   _id: "62027170237dfd5dfe320487"
-      // }
-
+      jsonResponse.sort((a, b) => a.date_of_scrapting < b.date_of_scrapting ? 1 : -1);
       jsonResponse.map((response) => {
         if (indexedUsernames.includes(response.group_username)) {
           scrapingDates[response.group_username].push({ "date": response.date_of_scrapting, "id": response._id });
@@ -281,7 +344,7 @@ class PreTelegram extends Component {
         }
       });
 
-      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
+      this.state.collapseExpandGroup = [...Array(indexedUsernames.length).keys()].map((item) => false);
 
       this.groupData = JSON.parse(JSON.stringify(uniqueUsernameData));
       this.groupDateData = JSON.parse(JSON.stringify(scrapingDates));
