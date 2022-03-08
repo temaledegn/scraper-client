@@ -113,6 +113,7 @@ class Twitter extends Component {
       var indexedUsernames = [];
       var scrapingDates = {};
       var uniqueUsernameData = [];
+      // emptyUsernameRemoved.sort((a, b) => a.Date_of_Scraping < b.Date_of_Scraping ? 1 : -1);
 
       emptyUsernameRemoved.map((response) => {
         if (indexedUsernames.includes(response.UserName)) {
@@ -124,6 +125,10 @@ class Twitter extends Component {
         }
       });
       this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
+
+      for (const [key, value] of Object.entries(scrapingDates)) {
+        value.sort((a, b) => a.date < b.date ? 1 : -1);
+      }
 
       this.data = JSON.parse(JSON.stringify(uniqueUsernameData));
       this.dateData = JSON.parse(JSON.stringify(scrapingDates));
@@ -140,6 +145,10 @@ class Twitter extends Component {
       value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
       widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
+
+
+
+
 
     const list = this.data.map((item, i) => React.createElement('div', { className: 'col-md-3', },
       React.createElement('h5', {}, React.createElement('b', {}, item.Fullname)),

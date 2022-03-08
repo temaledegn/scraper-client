@@ -99,10 +99,6 @@ class Youtube extends Component {
       });
   }
 
-  // onlinkDeleteHandler = (e) => {
-  //   e.preventDefault();
-
-  // }
 
   onlinkDeleteHandler = (link) => {
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/youtube/delete', { 'link': link }, {
@@ -191,63 +187,57 @@ class Youtube extends Component {
 
 
 
-    fetch(APIConstants.YOUTUBE_API_ROOT + '/youtube/all-videos', {
-      headers: new Headers({
-        'x-access-token': globalFunctions.getAccessToken(),
-      })
-    }).then((response) => {
-      return response.json();
-    }).then((jsonResponse) => {
-
-      const list = jsonResponse.map((item, i) => React.createElement('div', { className: 'col-md-4', },
-        React.createElement('h4', {}, item.title),
-
-        React.createElement('a', { href: item.url }, item.url),
-        <br />,
-        <br />,
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Number of Views:  '),
-          React.createElement('span', {}, item.views),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Number of Likes:  '),
-          React.createElement('span', {}, item.likes),
-        ),
-
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Channel Name:  '),
-          React.createElement('a', { href: item.channel.channel_url, target: '?' }, item.channel.channel_name),
-        ),
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Number of Subscribers:  '),
-          React.createElement('span', {}, item.channel.subscribers.replaceAll('subscribers', '')),
-        ),
 
 
-        React.createElement('p', {},
-          React.createElement('b', {}, 'Reporting:  '),
-          <ReportWidget reporting={item.reporting.is_reported === true ? 'true' : currentlyReporting.includes(item.url) ? 'pending' : 'false'} contentId={item.url} _type='video' />
-        ),
+    const list = this.data.map((item, i) => React.createElement('div', { className: 'col-md-4', },
+      React.createElement('h4', {}, item.title),
+
+      React.createElement('a', { href: item.url }, item.url),
+      <br />,
+      <br />,
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Number of Views:  '),
+        React.createElement('span', {}, item.views),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Number of Likes:  '),
+        React.createElement('span', {}, item.likes),
+      ),
+
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Channel Name:  '),
+        React.createElement('a', { href: item.channel.channel_url, target: '?' }, item.channel.channel_name),
+      ),
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Number of Subscribers:  '),
+        React.createElement('span', {}, item.channel.subscribers.replaceAll('subscribers', '')),
+      ),
+
+
+      React.createElement('p', {},
+        React.createElement('b', {}, 'Reporting:  '),
+        <ReportWidget reporting={item.reporting.is_reported === true ? 'true' : currentlyReporting.includes(item.url) ? 'pending' : 'false'} contentId={item.url} _type='video' />
+      ),
 
 
 
-        React.createElement('a', { onClick: () => this.updateShowCollapse(i), href: "#?" }, this.state.datesCollapseExpand[i] ? 'Hide Scraping Dates \u25b2' : 'Show Scraping Dates \u25bc'),
+      React.createElement('a', { onClick: () => this.updateShowCollapse(i), href: "#?" }, this.state.datesCollapseExpand[i] ? 'Hide Scraping Dates \u25b2' : 'Show Scraping Dates \u25bc'),
 
-        React.createElement(Collapse, { isOpened: this.state.datesCollapseExpand[i] },
-          widgets[item.url]
-        ),
+      React.createElement(Collapse, { isOpened: this.state.datesCollapseExpand[i] },
+        widgets[item.url]
+      ),
 
 
-        React.createElement('hr', {})
-      ));
+      React.createElement('hr', {})
+    ));
 
 
 
 
 
-      this.setState({ availablePages: list });
+    this.setState({ availablePages: list });
 
-    });
+
 
 
 

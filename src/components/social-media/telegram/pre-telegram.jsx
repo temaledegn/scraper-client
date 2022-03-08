@@ -219,7 +219,7 @@ class PreTelegram extends Component {
         React.createElement('h4', {}, item['channel_username']),
 
 
-        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.channel_username]).length
+        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + itemDateData.length
           + ' times from ',
           React.createElement('a', { href: '/telegram?id=' + itemDateData[itemDateData.length - 1]['id'] + '&type=channel' }, new Date(itemDateData[itemDateData.length - 1]['date']).toDateString()),
           React.createElement('span', {}, ' to '),
@@ -257,10 +257,8 @@ class PreTelegram extends Component {
         React.createElement('br'),
         React.createElement('h4', {}, item['group_username']),
 
-        React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.group_username]).length + ' times'),
 
-
-        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + Object.keys(widgets[item.group_username]).length
+        itemDateData.length > 1 ? React.createElement('p', {}, 'Scraped ' + itemDateData.length
           + ' times from ',
           React.createElement('a', { href: '/telegram?id=' + itemDateData[itemDateData.length - 1]['id'] + '&type=group' }, new Date(itemDateData[itemDateData.length - 1]['date']).toDateString()),
           React.createElement('span', {}, ' to '),
