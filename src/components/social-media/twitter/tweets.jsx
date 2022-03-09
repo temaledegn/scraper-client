@@ -194,14 +194,14 @@ function ReplyButton(props) {
             for (let x = 0; x < data.rows.length; x++) {
               var reporting = _dat.reporting;
               if (reporting === null) {
-                reporting = { is_reported: false, reported_by: null, reported_by: null };
+                reporting = { is_reported: false, reported_by: null, reporting_data: null };
               }
 
               if (data.rows[x].tweetID === tweet_id) {
                 replyList = _dat.map((_dat) => (
                   <ReplySection
                     tweetId={_dat.id}
-                    reporting={reporting.is_reported}
+                    reporting={reporting}
                     name={_dat.name}
                     username={_dat.username}
                     content={_dat.reply}
