@@ -180,33 +180,160 @@ class PreFacebook extends Component {
 
 
   fetchAndRenderData() {
-    fetch(APIConstants.FB_USER_API_ROOT + '/api/users/dates', {
+    fetch(APIConstants.FB_USER_API_ROOT + '/api/users/datesandgroups', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      console.log(jsonResponse);
-      const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
-        React.createElement('a', { href: '/facebook?id=' + item['_id'] + '&type=user' }, item['date'])
-      ));
-      this.setState({ usersDates: list });
+      //New Data Structure
+      // {
+      //   fb_link:{
+      //   about:"",
+      //   name:"",
+      //   collection_id:""
+      //   dates:[ 
+      //           {"date":"date", "post_lenght":"post_length", "document_id":"id"}, 
+      //           {"date":"date", "post_lenght":"post_length", "document_id":"id"}, 
+      //         ]
+      //  }
+      // }
+
+      var structured = {};
+      jsonResponse.forEach((item) => {
+        var fbLink = item.facebookLink;
+        if (fbLink in structured) {
+          structured[fbLink].dates.push({
+            "date": item.date,
+            "post_length": item.postLength,
+            "document_id": item.groupId,
+            "collection_id": item.collectionId,
+          })
+        } else {
+          structured[fbLink] =
+          {
+            "name": item.name,
+            "about": item.about,
+            "dates": [
+              {
+                "date": item.date,
+                "post_length": item.postLength,
+                "document_id": item.groupId,
+                "collection_id": item.collectionId,
+              }
+            ]
+          }
+        }
+      });
+
+      var widgetsList = [];
+      var keys = Object.keys(structured);
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var datesWidget = [];
+
+        structured[key].dates.forEach(element => {
+          if (parseInt(element.post_length) > 0) {
+            datesWidget.push(React.createElement('p', { padding: "0%" },
+              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date)
+            ));
+          }
+
+        });
+
+        widgetsList.push(
+          React.createElement('div', { className: "col-md-4", textAlign: "left" },
+            React.createElement('h4', {}, structured[key].name),
+            React.createElement('p', {}, structured[key].about),
+            React.createElement('a', { 'href': key, target: '?' }, key),
+            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, datesWidget)
+          )
+        );
+
+      }
+
+      this.setState({ usersDates: widgetsList })
+
+      // const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
+      //   React.createElement('a', { href: '/facebook?id=' + item['_id'] + '&type=user' }, item['date'])
+      // ));
+      // this.setState({ usersDates: list });
 
     });
 
-    fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/dates', {
+    fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/datesandgroups', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      console.log(jsonResponse);
-      const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
-        React.createElement('a', { href: '/facebook?id=' + item._id + '&type=page' }, item['date'])
-      ));
-      this.setState({ groupsDates: list });
+
+      var structured = {};
+      jsonResponse.forEach((item) => {
+        var fbLink = item.facebookLink;
+        if (fbLink in structured) {
+          structured[fbLink].dates.push({
+            "date": item.date,
+            "post_length": item.postLength,
+            "document_id": item.groupId,
+            "collection_id": item.collectionId,
+          })
+        } else {
+          structured[fbLink] =
+          {
+            "name": item.name,
+            "about": item.about,
+            "dates": [
+              {
+                "date": item.date,
+                "post_length": item.postLength,
+                "document_id": item.groupId,
+                "collection_id": item.collectionId,
+              }
+            ]
+          }
+        }
+      });
+
+      var widgetsList = [];
+      var keys = Object.keys(structured);
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var datesWidget = [];
+
+        structured[key].dates.forEach(element => {
+          if (parseInt(element.post_length) > 0) {
+            datesWidget.push(React.createElement('p', { padding: "0%" },
+              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date)
+            ));
+          }
+
+        });
+
+        widgetsList.push(
+          React.createElement('div', { className: "col-md-4", textAlign: "left" },
+            React.createElement('h4', {}, structured[key].name),
+            React.createElement('p', {}, structured[key].about),
+            React.createElement('a', { 'href': key, target: '?' }, key),
+            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, datesWidget)
+          )
+        );
+
+      }
+
+      this.setState({ groupsDates: widgetsList });
+
+      // console.log(structured);
+
+      // console.log(jsonResponse);
+      // const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
+      //   React.createElement('a', { href: '/facebook?id=' + item._id + '&type=page' }, item['date'])
+      // ));
+      // this.setState({ groupsDates: list });
 
     });
   }
@@ -224,13 +351,11 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", margin: "5%" }}>
+        <div style={{ textAlign: "center", margin: "2%" }}>
           <h4>Click on a scraping date to continue!</h4>
-          <br />
-          <span>{this.state.usersDates}</span>
-
-
         </div>
+
+        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div>
 
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>
@@ -256,12 +381,11 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "10%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", marginTop: "5%" }}>
+        <div style={{ textAlign: "center", marginTop: "2%" }}>
           <h4>Click on a scraping date to continue!</h4>
-          <br />
-          <span>{this.state.groupsDates}</span>
-
         </div>
+
+        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.groupsDates}</div>
 
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>
