@@ -182,7 +182,7 @@ class Youtube extends Component {
     for (const [key, value] of Object.entries(this.dateData)) {
       var tmpWidget = [];
       value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/youtube/comments/?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : item.date))));
-      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 
 

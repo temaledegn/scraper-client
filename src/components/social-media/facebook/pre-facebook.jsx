@@ -199,11 +199,21 @@ class PreFacebook extends Component {
       //         ]
       //  }
       // }
+      jsonResponse = jsonResponse.reverse();
 
       var structured = {};
       jsonResponse.forEach((item) => {
+
         var fbLink = item.facebookLink;
         if (fbLink in structured) {
+          if (structured[fbLink].name == "empty") {
+            structured[fbLink].name = item.name;
+          }
+
+          if (structured[fbLink].about == "empty") {
+            structured[fbLink].about = item.about;
+          }
+
           structured[fbLink].dates.push({
             "date": item.date,
             "post_length": item.postLength,
@@ -230,6 +240,7 @@ class PreFacebook extends Component {
       var widgetsList = [];
       var keys = Object.keys(structured);
 
+
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         var datesWidget = [];
@@ -248,7 +259,7 @@ class PreFacebook extends Component {
             React.createElement('h4', {}, structured[key].name),
             React.createElement('p', {}, structured[key].about),
             React.createElement('a', { 'href': key, target: '?' }, key),
-            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, datesWidget)
+            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
           )
         );
 
@@ -271,10 +282,20 @@ class PreFacebook extends Component {
       return response.json();
     }).then((jsonResponse) => {
 
+      jsonResponse = jsonResponse.reverse();
+
       var structured = {};
       jsonResponse.forEach((item) => {
         var fbLink = item.facebookLink;
+
         if (fbLink in structured) {
+          if (structured[fbLink].name == "empty") {
+            structured[fbLink].name = item.name;
+          }
+          if (structured[fbLink].about == "empty") {
+            structured[fbLink].about = item.about;
+          }
+
           structured[fbLink].dates.push({
             "date": item.date,
             "post_length": item.postLength,
@@ -308,7 +329,7 @@ class PreFacebook extends Component {
         structured[key].dates.forEach(element => {
           if (parseInt(element.post_length) > 0) {
             datesWidget.push(React.createElement('p', { padding: "0%" },
-              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date)
+              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date)
             ));
           }
 
@@ -319,7 +340,7 @@ class PreFacebook extends Component {
             React.createElement('h4', {}, structured[key].name),
             React.createElement('p', {}, structured[key].about),
             React.createElement('a', { 'href': key, target: '?' }, key),
-            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, datesWidget)
+            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
           )
         );
 

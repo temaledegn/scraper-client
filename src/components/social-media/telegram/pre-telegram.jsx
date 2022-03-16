@@ -206,7 +206,7 @@ class PreTelegram extends Component {
     for (const [key, value] of Object.entries(this.channelDateData)) {
       var tmpWidget = [];
       value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=channel' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
-      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 
 
@@ -245,7 +245,7 @@ class PreTelegram extends Component {
     for (const [key, value] of Object.entries(this.groupDateData)) {
       var tmpWidget = [];
       value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/telegram?id=' + item['id'] + '&type=group' }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
-      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid brown", marginTop: "10px", padding: "15px" } }, tmpWidget);
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
 
 
