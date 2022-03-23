@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 
 import CommonComponents from "../../common/common";
 
@@ -13,10 +13,21 @@ import axios from "axios";
 
 import globalFunctions from "../../../common/GlobalsFunctions";
 
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+
+
+
 class PreFacebook extends Component {
   state = {
-    usersDates: 'Loading . . .', groupsDates: 'Loading . . .', currentlyScraping: [], currentlyScrapingUser: [],
+    usersDates: 'Loading . . .', groupsDates: 'Loading . . .', currentlyScraping: [], currentlyScrapingUser: [], selectionRange: {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection',
+    }
   };
+
 
 
   componentWillMount() {
@@ -25,8 +36,6 @@ class PreFacebook extends Component {
     this.fetchAndRenderDataPages();
     this.fetchAndRenderDataUser();
   }
-
-
 
   onPageAddHandler = (e) => {
     e.preventDefault();
@@ -62,7 +71,6 @@ class PreFacebook extends Component {
       });
   }
 
-
   onUserAddHandler = (e) => {
     e.preventDefault();
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value }, {
@@ -96,9 +104,6 @@ class PreFacebook extends Component {
         this.fetchAndRenderDataUser();
       });
   }
-
-
-
 
   fetchAndRenderDataPages() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
@@ -178,6 +183,31 @@ class PreFacebook extends Component {
     });
   }
 
+  getDateObject(stringDate) {
+    var dateData = stringDate.split(', ')[0].split('/');
+    var timeData = stringDate.split(', ')[1].split(' ')[0].split(':');
+    var amPmData = stringDate.split(', ')[1].split(' ')[1];
+    var year = ('000' + dateData[2]).slice(-4);
+    var month = ('000' + dateData[1]).slice(-2);
+    var date = ('000' + dateData[0]).slice(-2);
+
+    var hour = parseInt(timeData[0]);
+    if (amPmData.toLowerCase() === "pm") {
+      hour += 12;
+    }
+    if (hour == 12 || hour == 24) {
+      hour -= 12;
+    }
+    var minute = ('000' + timeData[1]).slice(-2);
+    var second = ('000' + timeData[2]).slice(-2);
+    var hour = ('000' + hour.toString()).slice(-2);
+    var tzFormat = year + '-' + month + '-' + date + 'T' + hour + ':' + minute + ':' + second + 'Z';
+
+    return new Date(tzFormat);
+
+  }
+
+  // *********************** USERS ***********************
 
   fetchAndRenderData() {
     fetch(APIConstants.FB_USER_API_ROOT + '/api/users/datesandgroups', {
@@ -205,6 +235,9 @@ class PreFacebook extends Component {
       jsonResponse.forEach((item) => {
 
         var fbLink = item.facebookLink;
+        var dateObject = this.getDateObject(item.date);
+
+
         if (fbLink in structured) {
           if (structured[fbLink].name == "empty") {
             structured[fbLink].name = item.name;
@@ -215,7 +248,7 @@ class PreFacebook extends Component {
           }
 
           structured[fbLink].dates.push({
-            "date": item.date,
+            "date": dateObject,
             "post_length": item.postLength,
             "document_id": item.groupId,
             "collection_id": item.collectionId,
@@ -227,7 +260,7 @@ class PreFacebook extends Component {
             "about": item.about,
             "dates": [
               {
-                "date": item.date,
+                "date": dateObject,
                 "post_length": item.postLength,
                 "document_id": item.groupId,
                 "collection_id": item.collectionId,
@@ -245,12 +278,42 @@ class PreFacebook extends Component {
         var key = keys[i];
         var datesWidget = [];
 
+        structured[key].dates.sort(function (b, a) {
+          return a.date - b.date;
+        });
+
         structured[key].dates.forEach(element => {
           if (parseInt(element.post_length) > 0) {
             datesWidget.push(React.createElement('p', { padding: "0%" },
-              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date)
+              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
             ));
           }
+
+          // console.log(element.date);
+          // var dateData = element.date.split(', ')[0].split('/');
+          // var timeData = element.date.split(', ')[1].split(' ')[0].split(':');
+          // var amPmData = element.date.split(', ')[1].split(' ')[1];
+          // var year = (dateData[2]);
+          // var month = (dateData[1]);
+          // var date = (dateData[0]);
+
+          // var hour = parseInt(timeData[0]);
+          // if (amPmData.toLowerCase() === "pm") {
+          //   hour += 12;
+          // }
+          // if (hour == 12 || hour == 24) {
+          //   hour -= 12;
+          // }
+          // var minute = (timeData[1]);
+          // var second = (timeData[2]);
+          // var hour = hour.toString();
+          // var tzFormat = year + '-' + month + '-' + date + 'T' + hour + ':' + minute + ':' + second + 'Z';
+          // var dateObject = new Date(tzFormat);
+
+
+
+          // 'DD/MM/YYYY, HH:mm:SS AM/PM'
+
 
         });
 
@@ -274,6 +337,13 @@ class PreFacebook extends Component {
 
     });
 
+
+
+    // *********************** GROUPS AND PAGES ***********************
+    // *********************** GROUPS AND PAGES ***********************
+    // *********************** GROUPS AND PAGES ***********************
+
+
     fetch(APIConstants.FB_GROUP_API_ROOT + '/api/pages/datesandgroups', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
@@ -288,6 +358,8 @@ class PreFacebook extends Component {
       jsonResponse.forEach((item) => {
         var fbLink = item.facebookLink;
 
+        var dateObject = this.getDateObject(item.date);
+
         if (fbLink in structured) {
           if (structured[fbLink].name == "empty") {
             structured[fbLink].name = item.name;
@@ -297,7 +369,7 @@ class PreFacebook extends Component {
           }
 
           structured[fbLink].dates.push({
-            "date": item.date,
+            "date": dateObject,
             "post_length": item.postLength,
             "document_id": item.groupId,
             "collection_id": item.collectionId,
@@ -309,7 +381,7 @@ class PreFacebook extends Component {
             "about": item.about,
             "dates": [
               {
-                "date": item.date,
+                "date": dateObject,
                 "post_length": item.postLength,
                 "document_id": item.groupId,
                 "collection_id": item.collectionId,
@@ -319,6 +391,7 @@ class PreFacebook extends Component {
         }
       });
 
+
       var widgetsList = [];
       var keys = Object.keys(structured);
 
@@ -326,10 +399,14 @@ class PreFacebook extends Component {
         var key = keys[i];
         var datesWidget = [];
 
+        structured[key].dates.sort(function (b, a) {
+          return a.date - b.date;
+        });
+
         structured[key].dates.forEach(element => {
           if (parseInt(element.post_length) > 0) {
             datesWidget.push(React.createElement('p', { padding: "0%" },
-              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date)
+              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
             ));
           }
 
@@ -360,7 +437,19 @@ class PreFacebook extends Component {
   }
 
 
+  handleDateRangeSelect = (date) => {
+    var newRange = {
+      key: "selection",
+      endDate: date.selection.endDate,
+      startDate: date.selection.startDate,
+    }
+
+    this.setState({ selectionRange: newRange });
+  }
+
+
   render() {
+
     return (
       <React.Fragment>
         <ToastContainer
@@ -373,8 +462,20 @@ class PreFacebook extends Component {
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
         <CommonComponents.SearchBox action="#" />
         <div style={{ textAlign: "center", margin: "2%" }}>
-          <h4>Click on a scraping date to continue!</h4>
+          <h4>Click on a scraping date to continue or choose date range!</h4>
         </div>
+
+        <div style={{ textAlign: "center" }}>
+          <DateRangePicker
+            ranges={[this.state.selectionRange]}
+            onChange={this.handleDateRangeSelect}
+            scroll={{ 'enabled': true }}
+            minDate={new Date(2021, 1, 1)}
+            maxDate={new Date()}
+
+          />
+        </div>
+
 
         <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div>
 

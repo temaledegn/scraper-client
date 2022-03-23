@@ -17,11 +17,22 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 
+
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+
+
 class Twitter extends Component {
   state = {
     currentlyScraping: [],
     availablePages: 'Loading . . .',
-    datesCollapseExpand: []
+    datesCollapseExpand: [],
+    currentlyScrapingUser: [], selectionRange: {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection',
+    }
   };
 
   static data = [];
@@ -187,6 +198,18 @@ class Twitter extends Component {
     this.setState({ availablePages: list });
   }
 
+
+  handleDateRangeSelect = (date) => {
+    var newRange = {
+      key: "selection",
+      endDate: date.selection.endDate,
+      startDate: date.selection.startDate,
+    }
+
+    this.setState({ selectionRange: newRange });
+  }
+
+
   render() {
     return (
       <div style={{ margin: "1% 4% 0 4%" }}>
@@ -199,6 +222,23 @@ class Twitter extends Component {
 
         <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3><a href={APIConstants.STATISTICS_API_ROOT + "/app/dashboards#/view/3ea81100-63f2-11ec-b6bf-37cf416580cd?_a=(viewMode:edit)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))"} target="_blank">GET STATISTICS</a></div>
         <CommonComponents.SearchBox action="/twitter/search" />
+
+        <div style={{ textAlign: "center", margin: "2%" }}>
+          <h4>Click on a scraping date to continue or choose date range!</h4>
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <DateRangePicker
+            ranges={[this.state.selectionRange]}
+            onChange={this.handleDateRangeSelect}
+            scroll={{ 'enabled': true }}
+            minDate={new Date(2021, 1, 1)}
+            maxDate={new Date()}
+
+          />
+        </div>
+
+
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
             <b>AVAILABLE PAGES</b>
