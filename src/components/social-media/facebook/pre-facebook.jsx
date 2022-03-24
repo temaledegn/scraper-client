@@ -188,8 +188,8 @@ class PreFacebook extends Component {
     var timeData = stringDate.split(', ')[1].split(' ')[0].split(':');
     var amPmData = stringDate.split(', ')[1].split(' ')[1];
     var year = ('000' + dateData[2]).slice(-4);
-    var month = ('000' + dateData[1]).slice(-2);
-    var date = ('000' + dateData[0]).slice(-2);
+    var month = ('000' + dateData[0]).slice(-2);
+    var date = ('000' + dateData[1]).slice(-2);
 
     var hour = parseInt(timeData[0]);
     if (amPmData.toLowerCase() === "pm") {
@@ -202,7 +202,6 @@ class PreFacebook extends Component {
     var second = ('000' + timeData[2]).slice(-2);
     var hour = ('000' + hour.toString()).slice(-2);
     var tzFormat = year + '-' + month + '-' + date + 'T' + hour + ':' + minute + ':' + second + 'Z';
-
     return new Date(tzFormat);
 
   }
