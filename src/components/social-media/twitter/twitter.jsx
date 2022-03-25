@@ -210,6 +210,10 @@ class Twitter extends Component {
   }
 
 
+  toggleDateRangeCollapse = () => {
+    this.setState({ isDateRangeCollapsed: !this.state.isDateRangeCollapsed });
+  }
+
   render() {
     return (
       <div style={{ margin: "1% 4% 0 4%" }}>
@@ -224,19 +228,20 @@ class Twitter extends Component {
         <CommonComponents.SearchBox action="/twitter/search" />
 
         <div style={{ textAlign: "center", margin: "2%" }}>
-          <h4>Click on a scraping date to continue or choose date range!</h4>
+          <h4>Click on a scraping date to continue or <a onClick={this.toggleDateRangeCollapse} href="#?">choose date range!</a></h4>
         </div>
+        <Collapse isOpened={this.state.isDateRangeCollapsed}>
+          <div style={{ textAlign: "center" }}>
+            <DateRangePicker
+              ranges={[this.state.selectionRange]}
+              onChange={this.handleDateRangeSelect}
+              scroll={{ 'enabled': true }}
+              minDate={new Date(2021, 1, 1)}
+              maxDate={new Date()}
 
-        <div style={{ textAlign: "center" }}>
-          <DateRangePicker
-            ranges={[this.state.selectionRange]}
-            onChange={this.handleDateRangeSelect}
-            scroll={{ 'enabled': true }}
-            minDate={new Date(2021, 1, 1)}
-            maxDate={new Date()}
-
-          />
-        </div>
+            />
+          </div>
+        </Collapse>
 
 
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>

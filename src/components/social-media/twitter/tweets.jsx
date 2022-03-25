@@ -22,7 +22,7 @@ class ReportWidget extends React.Component {
 
   render() {
     if (this.state.reporting == 'false') {
-      return React.createElement('button', { disabled: true, id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport(this.props._type, this.props.tweetId, this) } }, 'Report');
+      return React.createElement('button', { disabled: false, id: this.props._id, className: "btn btn-sm btn-warning", onClick: () => { onHandleReport(this.props._type, this.props.tweetId, this) } }, 'Report');
     } else if (this.state.reporting == 'pending') {
       return React.createElement('span', { id: this.props._id, },
         React.createElement('i', { className: 'fa fa-spinner', style: { color: 'orange' } }, ''),

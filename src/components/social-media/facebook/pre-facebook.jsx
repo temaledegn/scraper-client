@@ -16,6 +16,7 @@ import globalFunctions from "../../../common/GlobalsFunctions";
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
+import { Collapse } from "react-collapse";
 
 
 
@@ -25,7 +26,7 @@ class PreFacebook extends Component {
       startDate: new Date(),
       endDate: new Date(),
       key: 'selection',
-    }
+    }, isDateRangeCollapsed: false
   };
 
 
@@ -446,6 +447,9 @@ class PreFacebook extends Component {
     this.setState({ selectionRange: newRange });
   }
 
+  toggleDateRangeCollapse = () => {
+    this.setState({ isDateRangeCollapsed: !this.state.isDateRangeCollapsed });
+  }
 
   render() {
 
@@ -461,19 +465,20 @@ class PreFacebook extends Component {
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
         <CommonComponents.SearchBox action="#" />
         <div style={{ textAlign: "center", margin: "2%" }}>
-          <h4>Click on a scraping date to continue or choose date range!</h4>
+          <h4>Click on a scraping date to continue or <a onClick={this.toggleDateRangeCollapse} href="#?">choose date range!</a></h4>
         </div>
+        <Collapse isOpened={this.state.isDateRangeCollapsed}>
+          <div style={{ textAlign: "center" }}>
+            <DateRangePicker
+              ranges={[this.state.selectionRange]}
+              onChange={this.handleDateRangeSelect}
+              scroll={{ 'enabled': true }}
+              minDate={new Date(2021, 1, 1)}
+              maxDate={new Date()}
 
-        <div style={{ textAlign: "center" }}>
-          <DateRangePicker
-            ranges={[this.state.selectionRange]}
-            onChange={this.handleDateRangeSelect}
-            scroll={{ 'enabled': true }}
-            minDate={new Date(2021, 1, 1)}
-            maxDate={new Date()}
-
-          />
-        </div>
+            />
+          </div>
+        </Collapse>
 
 
         <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div>
