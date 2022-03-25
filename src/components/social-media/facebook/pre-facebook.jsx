@@ -18,11 +18,13 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { Collapse } from "react-collapse";
 
+import { css } from "@emotion/react";
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 class PreFacebook extends Component {
   state = {
-    usersDates: 'Loading . . .', groupsDates: 'Loading . . .', currentlyScraping: [], currentlyScrapingUser: [], selectionRange: {
+    usersDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, groupsDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, currentlyScraping: [], currentlyScrapingUser: [], selectionRange: {
       startDate: new Date(),
       endDate: new Date(),
       key: 'selection',
@@ -106,6 +108,7 @@ class PreFacebook extends Component {
       });
   }
 
+
   fetchAndRenderDataPages() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
       headers: new Headers({
@@ -115,31 +118,11 @@ class PreFacebook extends Component {
       return response.json();
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-        // const list =
-        //   React.createElement('div', { textAlign: 'start' },
-        //     React.createElement('ul', {},
-        //       jsonResponse.map((item) => React.createElement('li', {},
-        //         React.createElement('form', { method: 'POST', onSubmit: this.onPageDeleteHandler },
-        //           React.createElement('a', { href: item, target: '_blank' }, item),
-        //           React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-        //           React.createElement('div', {}),
-        //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-        //         React.createElement('div', {})))
-        //     )
-        //   );
-
-
         const list = jsonResponse.map((item, index) => {
           return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
         });
-
-
-
         this.setState({ currentlyScraping: list });
       } else {
-        // const list = React.createElement('div', {},
-        //   React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-        // )
         this.setState({ currentlyScraping: [] })
       }
     });
@@ -154,31 +137,11 @@ class PreFacebook extends Component {
       return response.json();
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
-        // const list =
-        //   React.createElement('div', { textAlign: 'left' },
-        //     React.createElement('ul', {},
-        //       jsonResponse.map((item) => React.createElement('li', {},
-        //         React.createElement('form', { method: 'POST', onSubmit: this.onUserDeleteHandler },
-        //           React.createElement('a', { href: item, target: '_blank' }, item),
-        //           React.createElement('input', { type: 'hidden', value: item, name: 'link' }),
-        //           React.createElement('div', {}),
-        //           React.createElement('button', { type: 'submit', className: 'btn btn-danger btn-sm' }, '\u2715 Delete')),
-        //         React.createElement('div', {})))
-        //     )
-        //   );
-
-
         const list = jsonResponse.map((item, index) => {
           return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
         });
-
-
-
         this.setState({ currentlyScrapingUser: list });
       } else {
-        // const list = React.createElement('div', {},
-        //   React.createElement('p', { style: { color: 'grey' } }, 'No link found')
-        // )
         this.setState({ currentlyScrapingUser: [] })
       }
     });
@@ -208,6 +171,83 @@ class PreFacebook extends Component {
   }
 
   // *********************** USERS ***********************
+
+
+  structuredUser = {};
+  structuredPage = {};
+
+  renderDataPage(structured) {
+    this.setState({ groupsDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} /> });
+    var widgetsList = [];
+    var keys = Object.keys(structured);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var datesWidget = [];
+
+      structured[key].dates.sort(function (b, a) {
+        return a.date - b.date;
+      });
+
+      structured[key].dates.forEach(element => {
+        if (parseInt(element.post_length) > 0) {
+          datesWidget.push(React.createElement('p', { padding: "0%" },
+            React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
+          ));
+        }
+
+      });
+
+      widgetsList.push(
+        React.createElement('div', { className: "col-md-4", textAlign: "left" },
+          React.createElement('h4', {}, structured[key].name),
+          React.createElement('p', {}, structured[key].about),
+          React.createElement('a', { 'href': key, target: '?' }, key),
+          React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
+        )
+      );
+
+    }
+
+    this.setState({ groupsDates: widgetsList });
+  }
+
+  renderDataUser(structured) {
+
+    this.setState({ usersDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} /> });
+    var widgetsList = [];
+    var keys = Object.keys(structured);
+
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var datesWidget = [];
+
+      structured[key].dates.sort(function (b, a) {
+        return a.date - b.date;
+      });
+
+      structured[key].dates.forEach(element => {
+        if (parseInt(element.post_length) > 0) {
+          datesWidget.push(React.createElement('p', { padding: "0%" },
+            React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
+          ));
+        }
+      });
+
+      widgetsList.push(
+        React.createElement('div', { className: "col-md-4", textAlign: "left" },
+          React.createElement('h4', {}, structured[key].name),
+          React.createElement('p', {}, structured[key].about),
+          React.createElement('a', { 'href': key, target: '?' }, key),
+          React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
+        )
+      );
+    }
+
+    this.setState({ usersDates: widgetsList })
+  }
+
 
   fetchAndRenderData() {
     fetch(APIConstants.FB_USER_API_ROOT + '/api/users/datesandgroups', {
@@ -270,70 +310,46 @@ class PreFacebook extends Component {
         }
       });
 
-      var widgetsList = [];
-      var keys = Object.keys(structured);
+      this.structuredUser = structured;
+      this.renderDataUser(structured);
+
+      // var widgetsList = [];
+      // var keys = Object.keys(structured);
 
 
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var datesWidget = [];
+      // for (var i = 0; i < keys.length; i++) {
+      //   var key = keys[i];
+      //   var datesWidget = [];
 
-        structured[key].dates.sort(function (b, a) {
-          return a.date - b.date;
-        });
+      //   structured[key].dates.sort(function (b, a) {
+      //     return a.date - b.date;
+      //   });
 
-        structured[key].dates.forEach(element => {
-          if (parseInt(element.post_length) > 0) {
-            datesWidget.push(React.createElement('p', { padding: "0%" },
-              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
-            ));
-          }
-
-          // console.log(element.date);
-          // var dateData = element.date.split(', ')[0].split('/');
-          // var timeData = element.date.split(', ')[1].split(' ')[0].split(':');
-          // var amPmData = element.date.split(', ')[1].split(' ')[1];
-          // var year = (dateData[2]);
-          // var month = (dateData[1]);
-          // var date = (dateData[0]);
-
-          // var hour = parseInt(timeData[0]);
-          // if (amPmData.toLowerCase() === "pm") {
-          //   hour += 12;
-          // }
-          // if (hour == 12 || hour == 24) {
-          //   hour -= 12;
-          // }
-          // var minute = (timeData[1]);
-          // var second = (timeData[2]);
-          // var hour = hour.toString();
-          // var tzFormat = year + '-' + month + '-' + date + 'T' + hour + ':' + minute + ':' + second + 'Z';
-          // var dateObject = new Date(tzFormat);
+      //   structured[key].dates.forEach(element => {
+      //     if (parseInt(element.post_length) > 0) {
+      //       datesWidget.push(React.createElement('p', { padding: "0%" },
+      //         React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=user' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
+      //       ));
+      //     }
 
 
 
-          // 'DD/MM/YYYY, HH:mm:SS AM/PM'
+      //   });
+
+      //   widgetsList.push(
+      //     React.createElement('div', { className: "col-md-4", textAlign: "left" },
+      //       React.createElement('h4', {}, structured[key].name),
+      //       React.createElement('p', {}, structured[key].about),
+      //       React.createElement('a', { 'href': key, target: '?' }, key),
+      //       React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
+      //     )
+      //   );
+
+      // }
+
+      // this.setState({ usersDates: widgetsList })
 
 
-        });
-
-        widgetsList.push(
-          React.createElement('div', { className: "col-md-4", textAlign: "left" },
-            React.createElement('h4', {}, structured[key].name),
-            React.createElement('p', {}, structured[key].about),
-            React.createElement('a', { 'href': key, target: '?' }, key),
-            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
-          )
-        );
-
-      }
-
-      this.setState({ usersDates: widgetsList })
-
-      // const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
-      //   React.createElement('a', { href: '/facebook?id=' + item['_id'] + '&type=user' }, item['date'])
-      // ));
-      // this.setState({ usersDates: list });
 
     });
 
@@ -391,47 +407,42 @@ class PreFacebook extends Component {
         }
       });
 
+      this.structuredPage = structured;
+      this.renderDataPage(structured);
 
-      var widgetsList = [];
-      var keys = Object.keys(structured);
 
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var datesWidget = [];
+      // var widgetsList = [];
+      // var keys = Object.keys(structured);
 
-        structured[key].dates.sort(function (b, a) {
-          return a.date - b.date;
-        });
+      // for (var i = 0; i < keys.length; i++) {
+      //   var key = keys[i];
+      //   var datesWidget = [];
 
-        structured[key].dates.forEach(element => {
-          if (parseInt(element.post_length) > 0) {
-            datesWidget.push(React.createElement('p', { padding: "0%" },
-              React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
-            ));
-          }
+      //   structured[key].dates.sort(function (b, a) {
+      //     return a.date - b.date;
+      //   });
 
-        });
+      //   structured[key].dates.forEach(element => {
+      //     if (parseInt(element.post_length) > 0) {
+      //       datesWidget.push(React.createElement('p', { padding: "0%" },
+      //         React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
+      //       ));
+      //     }
 
-        widgetsList.push(
-          React.createElement('div', { className: "col-md-4", textAlign: "left" },
-            React.createElement('h4', {}, structured[key].name),
-            React.createElement('p', {}, structured[key].about),
-            React.createElement('a', { 'href': key, target: '?' }, key),
-            React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
-          )
-        );
+      //   });
 
-      }
+      //   widgetsList.push(
+      //     React.createElement('div', { className: "col-md-4", textAlign: "left" },
+      //       React.createElement('h4', {}, structured[key].name),
+      //       React.createElement('p', {}, structured[key].about),
+      //       React.createElement('a', { 'href': key, target: '?' }, key),
+      //       React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
+      //     )
+      //   );
 
-      this.setState({ groupsDates: widgetsList });
+      // }
 
-      // console.log(structured);
-
-      // console.log(jsonResponse);
-      // const list = jsonResponse.sort((a, b) => a.date < b.date ? 1 : -1).map((item) => React.createElement('div', {},
-      //   React.createElement('a', { href: '/facebook?id=' + item._id + '&type=page' }, item['date'])
-      // ));
-      // this.setState({ groupsDates: list });
+      // this.setState({ groupsDates: widgetsList });
 
     });
   }
@@ -443,8 +454,50 @@ class PreFacebook extends Component {
       endDate: date.selection.endDate,
       startDate: date.selection.startDate,
     }
-
     this.setState({ selectionRange: newRange });
+
+    var startDate = date.selection.startDate;
+    var endDate = date.selection.endDate;
+    // startDate.setDate(startDate.getDate() - 1);
+    endDate.setDate(endDate.getDate() + 1);
+
+
+    var newStructured = {};
+    var keys = Object.keys(this.structuredPage);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var newDates = [];
+      var currentDates = this.structuredPage[key].dates;
+      for (var j = 0; j < currentDates.length; j++) {
+        var dd = currentDates[j].date;
+        if (dd.getTime() < endDate.getTime() && dd.getTime() > startDate.getTime()) {
+          newDates.push(currentDates[j]);
+        }
+      }
+      newStructured[key] = { "about": this.structuredPage[key]["about"], "name": this.structuredPage[key]["name"], "dates": newDates }
+    }
+
+    this.renderDataPage(newStructured);
+
+    newStructured = {};
+    keys = Object.keys(this.structuredUser);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var newDates = [];
+      var currentDates = this.structuredUser[key].dates;
+      for (var j = 0; j < currentDates.length; j++) {
+        var dd = currentDates[j].date;
+        if (dd.getTime() < endDate.getTime() && dd.getTime() > startDate.getTime()) {
+          newDates.push(currentDates[j]);
+        }
+      }
+      newStructured[key] = { "about": this.structuredUser[key]["about"], "name": this.structuredUser[key]["name"], "dates": newDates }
+    }
+    this.renderDataUser(newStructured);
+
+
   }
 
   toggleDateRangeCollapse = () => {
