@@ -1,14 +1,6 @@
 import React, { Component } from "react";
 
 import CommonComponents from "../../common/common";
-import { Collapse } from "react-collapse";
-
-// import realdonaldtrump from "../../../assets/img/scraped/realdonaldtrump.jpg";
-// import tigraywillwin from "../../../assets/img/scraped/tigraywillwin.jpg";
-// import h8oicpmj5cu21ws from "../../../assets/img/scraped/h8oicpmj5cu21ws.jpg";
-// import eoap5q8gql11egl from "../../../assets/img/scraped/eoap5q8gql11egl.jpg";
-// import tigraiadey from "../../../assets/img/scraped/tigraiadey.jpg";
-// import shegerfm from "../../../assets/img/scraped/shegerfm.jpg";
 
 import globalFunctions from "../../../common/GlobalsFunctions";
 import APIConstants from "../../../constants/constants";
@@ -17,26 +9,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 
-
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRangePicker } from 'react-date-range';
-
-
 class Twitter extends Component {
   state = {
     currentlyScraping: [],
-    availablePages: 'Loading . . .',
-    datesCollapseExpand: [],
-    currentlyScrapingUser: [], selectionRange: {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    }
+    currentlyScrapingKeyword:[],
+    availablePages: 'Loading . . .'
   };
-
-  static data = [];
-  static dateData = {};
 
   componentWillMount() {
     this.fetchAndRenderData();
@@ -44,9 +22,9 @@ class Twitter extends Component {
   }
 
 
-  onUsernameAddHandler = (e) => {
+  onUsernameAddHandler =  (e) => {
     e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'username': e.target.username.value }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'username': e.target.username.value, 'type':'username' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -62,8 +40,8 @@ class Twitter extends Component {
       });
   }
 
-  onUsernameDeleteHandler = (item) => {
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'username': item }, {
+  onUsernameDeleteHandler = (item, _type) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'username': item, 'type':'username'}, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -79,35 +57,90 @@ class Twitter extends Component {
   }
 
 
+
+  onKeywordAddHandler =  (e) => {
+    e.preventDefault();
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'keyword': e.target.keyword.value, 'type':'keyword' }, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        e.target.keyword.value = '';
+        this.fetchAndRenderData();
+      });
+  }
+
+  onKeywordDeleteHandler = (item, _type) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/delete', { 'keyword': item, 'type':'keyword'}, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        this.fetchAndRenderData();
+      });
+  }
+
+
+  onStartNowHandler = (item, _type) => {
+    console.log(item);
+    console.log('sending start now request.... ');
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/start-now', { 'keyword': item, 'type':'keyword'}, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        this.fetchAndRenderData();
+      });
+  }
+ 
+
   fetchAndRenderData() {
-    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/get', {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/get?type=username', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-
       const list = jsonResponse.map((item, index) => {
-        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUsernameDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://www.twitter.com/@' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+        return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onUsernameDeleteHandler(item, 'username') }}>Delete</button>&emsp;<a href={'https://www.twitter.com/@' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
       });
+
       this.setState({ currentlyScraping: list });
     });
 
 
-  }
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/get?type=keyword', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      const list = jsonResponse.map((item, index) => {
+        return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onKeywordDeleteHandler(item, 'keyword') }}>Delete</button>&emsp;<a href='#?'  className="btn btn-sm btn-primary" >View Scraped</a>&emsp;<button onClick={() => { this.onStartNowHandler(item, 'keyword') }} className="btn btn-sm btn-success" >Start Now</button></div> };
+      });
 
-
-  updateShowCollapse(index) {
-    for (var i = 0; i < index; i++) {
-      this.state.collapseExpand[i] = false;
-    }
-    for (var i = index + 1; i < this.state.collapseExpand.length; i++) {
-      this.state.collapseExpand[i] = false;
-    }
-
-    this.state.collapseExpand[index] = !this.state.collapseExpand[index];
-    this.renderData();
+      this.setState({ currentlyScrapingKeyword: list });
+    });
   }
 
   fetchAndRenderDataAvailable() {
@@ -118,100 +151,45 @@ class Twitter extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
-      const emptyUsernameRemoved = jsonResponse.filter(item => (item.UserName != '' && item.UserName != null));
+
+      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-3', },
+        React.createElement('h5', {}, item.Fullname + ' ON ' + item.Date_of_Scraping),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Username: '),
+          React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'About: '),
+          React.createElement('span', {}, item.Description),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Tweets: '),
+          React.createElement('span', {}, item.Tweets),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Followers: '),
+          React.createElement('span', {}, item['Number of Followers']),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Following: '),
+          React.createElement('span', {}, item['Number of Followings']),
+        ),
+        React.createElement('p', {},
+          React.createElement('b', {}, 'Joined Date: '),
+          React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
+        ),
+        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/twitter/page/' + item.UserName.substring(1) + '?doc-id=' + item._id }, 'Go To Tweets \u279c'
+        ),
+        React.createElement('div', { style: { marginTop: "15%" } })
+      ));
 
 
-      var indexedUsernames = [];
-      var scrapingDates = {};
-      var uniqueUsernameData = [];
-      // emptyUsernameRemoved.sort((a, b) => a.Date_of_Scraping < b.Date_of_Scraping ? 1 : -1);
 
-      emptyUsernameRemoved.map((response) => {
-        if (indexedUsernames.includes(response.UserName)) {
-          scrapingDates[response.UserName].push({ "date": response.Date_of_Scraping, "id": response._id });
-        } else {
-          scrapingDates[response.UserName] = [{ "date": response.Date_of_Scraping, "id": response._id }];
-          indexedUsernames.push(response.UserName);
-          uniqueUsernameData.push(response);
-        }
-      });
-      this.state.collapseExpand = [...Array(indexedUsernames.length).keys()].map((item) => false);
 
-      for (const [key, value] of Object.entries(scrapingDates)) {
-        value.sort((a, b) => a.date < b.date ? 1 : -1);
-      }
 
-      this.data = JSON.parse(JSON.stringify(uniqueUsernameData));
-      this.dateData = JSON.parse(JSON.stringify(scrapingDates));
-      this.renderData();
+      this.setState({ availablePages: list });
 
     });
-  }
-
-  renderData() {
-    var widgets = {};
-
-    for (const [key, value] of Object.entries(this.dateData)) {
-      var tmpWidget = [];
-      value.map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
-      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
-    }
-
-
-
-
-
-    const list = this.data.map((item, i) => React.createElement('div', { className: 'col-md-3', },
-      React.createElement('h5', {}, React.createElement('b', {}, item.Fullname)),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'Username: '),
-        React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
-      ),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'About: '),
-        React.createElement('span', {}, item.Description),
-      ),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'Tweets: '),
-        React.createElement('span', {}, item.Tweets),
-      ),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'Followers: '),
-        React.createElement('span', {}, item['Number of Followers']),
-      ),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'Following: '),
-        React.createElement('span', {}, item['Number of Followings']),
-      ),
-      React.createElement('p', {},
-        React.createElement('b', {}, 'Joined Date: '),
-        React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
-      ),
-      React.createElement('a', { onClick: () => this.updateShowCollapse(i), href: "#?" }, this.state.collapseExpand[i] ? 'Hide Scraping Dates \u25b2' : 'Show Scraping Dates \u25bc'),
-
-      React.createElement(Collapse, { isOpened: this.state.collapseExpand[i] },
-        widgets[item.UserName]
-      ),
-
-      React.createElement('div', { style: { marginTop: "15%" } })
-    ));
-    this.setState({ availablePages: list });
-  }
-
-
-  handleDateRangeSelect = (date) => {
-    var newRange = {
-      key: "selection",
-      endDate: date.selection.endDate,
-      startDate: date.selection.startDate,
-    }
-
-    this.setState({ selectionRange: newRange });
-  }
-
-
-  toggleDateRangeCollapse = () => {
-    this.setState({ isDateRangeCollapsed: !this.state.isDateRangeCollapsed });
   }
 
   render() {
@@ -226,113 +204,59 @@ class Twitter extends Component {
 
         <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3><a href={APIConstants.STATISTICS_API_ROOT + "/app/dashboards#/view/3ea81100-63f2-11ec-b6bf-37cf416580cd?_a=(viewMode:edit)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))"} target="_blank">GET STATISTICS</a></div>
         <CommonComponents.SearchBox action="/twitter/search" />
-
-        <div style={{ textAlign: "center", margin: "2%" }}>
-          <h4>Click on a scraping date to continue or <a onClick={this.toggleDateRangeCollapse} href="#?">choose date range!</a></h4>
-        </div>
-        <Collapse isOpened={this.state.isDateRangeCollapsed}>
-          <div style={{ textAlign: "center" }}>
-            <DateRangePicker
-              ranges={[this.state.selectionRange]}
-              onChange={this.handleDateRangeSelect}
-              scroll={{ 'enabled': true }}
-              minDate={new Date(2021, 1, 1)}
-              maxDate={new Date()}
-
-            />
-          </div>
-        </Collapse>
-
-
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
             <b>AVAILABLE PAGES</b>
           </h2>
         </div>
         <div className='row' style={{ maxHeight: "100vh", overflowY: "scroll" }}> {this.state.availablePages}</div>
-        {/* 
-        <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
-          <h2 style={{ color: "#555555" }}>
-            <b>MOST POPULAR</b>
-          </h2>
-        </div>
-        <div className="row">
-          <CommonComponents.FreqCard
-            link="/twitter/page/realdonaldtrump"
-            btn_text="Go To Tweets"
-            title="Donald J. Trump"
-            image={realdonaldtrump}
-            sm="twitter"
-            type='nodata'
-          />
-          <CommonComponents.FreqCard
-            link="/twitter/page/tigraywillwin"
-            btn_text="Go To Tweets"
-            title="ስሑል ኣብርሃ"
-            image={tigraywillwin}
-            sm="twitter"
-            type='nodata'
-          />
-          <CommonComponents.FreqCard
-            link="/twitter/page/h8oicpmj5cu21ws"
-            btn_text="Go To Tweets"
-            title="ሪም ትግራይ"
-            image={h8oicpmj5cu21ws}
-            sm="twitter"
-            type='nodata'
-          />
-          <CommonComponents.FreqCard
-            link="/twitter/page/eoap5q8gql11egl"
-            btn_text="Go To Tweets"
-            title="ምፅላል ተፈሪ"
-            image={eoap5q8gql11egl}
-            sm="twitter"
-            type='nodata'
-          />
-          <CommonComponents.FreqCard
-            link="/twitter/page/tigraiadey"
-            btn_text="Go To Tweets"
-            title="ትግራይ ዓደይ"
-            image={tigraiadey}
-            sm="twitter"
-            type='nodata'
-          />
-          <CommonComponents.FreqCard
-            link="/twitter/page/shegerfm"
-            btn_text="Go To Tweets"
-            title="ሸገር 102.1"
-            image={shegerfm}
-            sm="twitter"
-            type='nodata'
-          />
-        </div> */}
+       
 
-
-
+        <br/>
+        <hr/>
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h3><b>SCRAPING REQUESTS</b></h3>
         </div>
+        <br/>
 
-
-        <div className="container">
+      <div className="row">
+        <div className="col-md-6">
+          <div className="text-center"><h5><b>By Twitter Username</b></h5></div>
+          <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
+          <div style={{ margin: "5%" }}></div>
+
+          <div style={{ textAlign: 'center' }} id="add-requests-div">
+            <h5 style={{ color: "#444444" }}><b>ADD NEW USERNAME REQUEST</b></h5>
+            <br />
+
+            <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUsernameAddHandler} name='username' />
+
+          </div>
+        </div>
+        </div>
+        <div className="col-md-6">
+          <div className="text-center"><h5><b>By Keyword</b></h5></div>
+          <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingKeyword} />
         </div>
 
         <div style={{ margin: "5%" }}></div>
 
-        <div style={{ textAlign: 'center' }} id="add-requests-div">
-          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+        <div style={{ textAlign: 'center' }} id="add-requests-keyword-div">
+          <h5 style={{ color: "#444444" }}><b>ADD NEW KEYWORD REQUEST</b></h5>
           <br />
 
-          <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUsernameAddHandler} name='username' />
+          <CommonComponents.AddRequestField hint="Enter keyword here" on_submit={this.onKeywordAddHandler} name='keyword' />
 
         </div>
 
-
-
-
-        <div style={{ margin: "5%" }}></div>
-
+        </div>
+      </div>
+      
+      <br/>
+      <br/>
+      <br/>
       </div>
     );
   }

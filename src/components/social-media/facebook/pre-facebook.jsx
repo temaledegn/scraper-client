@@ -24,7 +24,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 class PreFacebook extends Component {
   state = {
-    usersDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, groupsDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, currentlyScraping: [], currentlyScrapingUser: [], selectionRange: {
+    usersDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, groupsDates: <ClipLoader color={"blue"} loading={true} css={true} size={100} />, currentlyScraping: [], currentlyScrapingUser: [], currentlyScrapingKeyword: [], currentlyScrapingUserKeyword: [], selectionRange: {
       startDate: new Date(),
       endDate: new Date(),
       key: 'selection',
@@ -42,7 +42,7 @@ class PreFacebook extends Component {
 
   onPageAddHandler = (e) => {
     e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value, 'type':'link' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -59,7 +59,42 @@ class PreFacebook extends Component {
   }
 
   onPageDeleteHandler = (item) => {
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link': item }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'link': item, 'type':'link' }, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        this.fetchAndRenderDataPages();
+      });
+  }
+
+  onPageKeywordAddHandler = (e) => {
+    e.preventDefault();
+    // console.log(e.target.keyword.value);
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'keyword': e.target.keyword.value, 'type':'keyword' }, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        e.target.keyword.value = '';
+        this.fetchAndRenderDataPages();
+      });
+  }
+
+  onPageKeywordDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/delete', { 'keyword': item, 'type':'keyword' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -76,7 +111,7 @@ class PreFacebook extends Component {
 
   onUserAddHandler = (e) => {
     e.preventDefault();
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value, 'type':'link'}, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -93,7 +128,41 @@ class PreFacebook extends Component {
   }
 
   onUserDeleteHandler = (item) => {
-    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': item }, {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'link': item, 'type':'link' }, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        this.fetchAndRenderDataUser();
+      });
+  }
+
+  onUserKeywordAddHandler = (e) => {
+    e.preventDefault();
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'keyword': e.target.keyword.value, 'type':'keyword' }, {
+      headers: { 'x-access-token': globalFunctions.getAccessToken() }
+    })
+      .then((response) => {
+        if (response.data.type == 'success') {
+          toast.success(response.data.message);
+        } else if (response.data.type == 'warning') {
+          toast.warning(response.data.message);
+        } else if (response.data.type == 'error') {
+          toast.error(response.data.message);
+        }
+        e.target.keyword.value = '';
+        this.fetchAndRenderDataUser();
+      });
+  }
+
+  onUserKeywordDeleteHandler = (item) => {
+    axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/delete', { 'keyword': item, 'type':'keyword' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
       .then((response) => {
@@ -110,7 +179,7 @@ class PreFacebook extends Component {
 
 
   fetchAndRenderDataPages() {
-    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get?type=link', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
@@ -119,17 +188,17 @@ class PreFacebook extends Component {
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
         const list = jsonResponse.map((item, index) => {
-          return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>&emsp;<a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
         });
         this.setState({ currentlyScraping: list });
       } else {
         this.setState({ currentlyScraping: [] })
       }
     });
-  }
 
-  fetchAndRenderDataUser() {
-    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get', {
+
+
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get?type=keyword', {
       headers: new Headers({
         'x-access-token': globalFunctions.getAccessToken(),
       })
@@ -138,13 +207,53 @@ class PreFacebook extends Component {
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
         const list = jsonResponse.map((item, index) => {
-          return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onPageKeywordDeleteHandler(item) }}>Delete</button>&emsp;<a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
+        });
+        this.setState({ currentlyScrapingKeyword: list });
+      } else {
+        this.setState({ currentlyScrapingKeyword: [] })
+      }
+    });
+
+  }
+
+  fetchAndRenderDataUser() {
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get?type=link', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      if (jsonResponse.length > 1 || jsonResponse[0] != '') {
+        const list = jsonResponse.map((item, index) => {
+          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>&emsp; <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> </div>};
         });
         this.setState({ currentlyScrapingUser: list });
       } else {
         this.setState({ currentlyScrapingUser: [] })
       }
     });
+
+
+
+    fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/get?type=keyword', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      if (jsonResponse.length > 1 || jsonResponse[0] != '') {
+        const list = jsonResponse.map((item, index) => {
+          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onUserKeywordDeleteHandler(item) }}>Delete</button>&emsp; <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
+        });
+        this.setState({ currentlyScrapingUserKeyword: list });
+      } else {
+        this.setState({ currentlyScrapingUserKeyword: [] })
+      }
+    });
+
   }
 
   getDateObject(stringDate) {
@@ -409,41 +518,7 @@ class PreFacebook extends Component {
 
       this.structuredPage = structured;
       this.renderDataPage(structured);
-
-
-      // var widgetsList = [];
-      // var keys = Object.keys(structured);
-
-      // for (var i = 0; i < keys.length; i++) {
-      //   var key = keys[i];
-      //   var datesWidget = [];
-
-      //   structured[key].dates.sort(function (b, a) {
-      //     return a.date - b.date;
-      //   });
-
-      //   structured[key].dates.forEach(element => {
-      //     if (parseInt(element.post_length) > 0) {
-      //       datesWidget.push(React.createElement('p', { padding: "0%" },
-      //         React.createElement('a', { href: '/facebook/page/' + structured[key].name + '?doc-id=' + element.collection_id + '&id=' + element.document_id + '&type=page' }, element.date.toDateString() + ', ' + element.date.toLocaleTimeString())
-      //       ));
-      //     }
-
-      //   });
-
-      //   widgetsList.push(
-      //     React.createElement('div', { className: "col-md-4", textAlign: "left" },
-      //       React.createElement('h4', {}, structured[key].name),
-      //       React.createElement('p', {}, structured[key].about),
-      //       React.createElement('a', { 'href': key, target: '?' }, key),
-      //       React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, datesWidget)
-      //     )
-      //   );
-
-      // }
-
-      // this.setState({ groupsDates: widgetsList });
-
+ 
     });
   }
 
@@ -539,21 +614,46 @@ class PreFacebook extends Component {
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>
         </div>
+        <br/>
 
-
-        <div className="container">
+        <div className="row">
+          <div className="col-md-7">
+          <div className="text-center"><h5><b>Using Facebook Link</b></h5></div>
+          <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingUser} />
         </div>
 
         <div style={{ margin: "5%" }}></div>
 
         <div className="container" style={{ textAlign: 'center' }} id="add-requests-div">
-          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <h5 style={{ color: "#444444" }}><b>Add New Link Request</b></h5>
           <br />
 
           <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onUserAddHandler} name='link' />
 
         </div>
+          </div>
+          <div className="col-md-5">
+
+          <div className="text-center"><h5><b>Using Keyword</b></h5></div>
+        <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingUserKeyword} />
+        </div>
+
+        <div style={{ margin: "5%" }}></div>
+
+        <div className="container" style={{ textAlign: 'center' }} id="add-requests-div">
+          <h5 style={{ color: "#444444" }}><b>Add New Keyword Request</b></h5>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter keyword here" on_submit={this.onUserKeywordAddHandler} name='keyword' />
+
+        </div>
+          </div>
+        </div>
+      
+
+
 
 
 
@@ -569,21 +669,45 @@ class PreFacebook extends Component {
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>
         </div>
+        <br/>
 
-
-        <div className="container">
+        <div className="row">
+          <div className="col-md-7">
+          <div className="text-center"><h5><b>Using Facebook Link</b></h5></div>
+          <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
         </div>
 
         <div style={{ margin: "5%" }}></div>
 
         <div className="container" style={{ textAlign: 'center', marginBottom: "5%" }} id="add-requests-div">
-          <h4 style={{ color: "#444444" }}><b>ADD NEW REQUEST</b></h4>
+          <h5 style={{ color: "#444444" }}><b>Add New Link Request</b></h5>
           <br />
 
           <CommonComponents.AddRequestField hint="Enter link here" on_submit={this.onPageAddHandler} name='link' />
 
         </div>
+
+          </div>
+          <div className="col-md-5">
+          <div className="text-center"><h5><b>Using Keyword</b></h5></div>
+          <div className="container">
+          <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingKeyword} />
+        </div>
+
+        <div style={{ margin: "5%" }}></div>
+
+        <div className="container" style={{ textAlign: 'center', marginBottom: "5%" }} id="add-requests-div">
+          <h5 style={{ color: "#444444" }}><b>Add New Keyword Request</b></h5>
+          <br />
+
+          <CommonComponents.AddRequestField hint="Enter keyword here" on_submit={this.onPageKeywordAddHandler} name='keyword' />
+
+        </div>
+          </div>
+        </div>
+
+
 
 
       </React.Fragment>

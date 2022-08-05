@@ -221,17 +221,12 @@ class ScrapingTable extends Component {
         width: 50,
       },
       {
-        label: "Delete",
-        field: "action_delete",
+        label: "Actions",
+        field: "actions",
         sort: "disabled",
-        width: 20,
+        width: 40,
       },
-      {
-        label: "Open",
-        field: "action_open",
-        sort: "disabled",
-        width: 20,
-      }
+   
     ];
 
     let data = { columns: dataRep, rows: this.props.tableData }

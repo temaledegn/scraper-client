@@ -49,6 +49,8 @@ import AuthService from './services/auth.service'
 import CommentList from "./components/social-media/youtube/comments";
 // import { youtubeComments } from "../../../ScraperAPI/app/controllers/scraper.controller";
 
+import KeywordSearch  from "./components/social-media/common/keyword-search";
+import KeywordSearchResults  from "./components/social-media/common/keyword-search-result";
 
 
 export default class App extends Component {
@@ -101,6 +103,12 @@ export default class App extends Component {
               </PrivateRoute>
               <PrivateRoute path="/youtube">
                 <YoutubeX />
+              </PrivateRoute>
+              <PrivateRoute path="/common/keyword/search">
+                <KeywordSearchResultsX />
+              </PrivateRoute>
+              <PrivateRoute path="/common/keyword">
+                <KeywordSearchX />
               </PrivateRoute>
               <PrivateRoute path="/user-guide">
                 <UserGuideX />
@@ -202,6 +210,25 @@ function TelegramSearch() {
         style={{ marginBottom: "10%", textAlign: "center" }}
       >
         <TelegramPostSearchResult searchQuery={q} />
+      </div>
+    </React.Fragment>
+  );
+}
+
+function KeywordSearchResultsX() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const q = urlParams.get("q");
+
+  return (
+    <React.Fragment>
+      <NavBar />
+      <CommonComponents.SearchBoxSmall action="/common/keyword/search" />
+      
+      <div
+        className=""
+        style={{ marginBottom: "10%", textAlign: "center", marginLeft: "17%", marginRight: "17%" }}
+      >
+        <KeywordSearchResults searchQuery={q} />
       </div>
     </React.Fragment>
   );
@@ -361,6 +388,17 @@ function YoutubeX() {
     </Switch>
 
 
+  );
+}
+
+
+function KeywordSearchX() {
+  return (
+    <React.Fragment>
+      <NavBar />
+      <KeywordSearch />
+      {/* <Footer /> */}
+    </React.Fragment>
   );
 }
 

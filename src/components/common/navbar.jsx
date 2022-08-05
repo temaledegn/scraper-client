@@ -54,6 +54,11 @@ class NavBar extends Component {
                 YOUTUBE
               </a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link" style={{color:'blue', backgroundColor:'#ee0'}} href="/common/keyword">
+                KEYWORD SEARCH
+              </a>
+            </li>
 
             <li className="nav-item">
               <a className="nav-link" href="/user-guide">
