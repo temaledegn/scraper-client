@@ -120,7 +120,7 @@ class PreTelegram extends Component {
         'x-access-token': globalFunctions.getAccessToken(),
       })
     }).then((response) => {
-      return response.json();/////////////
+      return response.json();
     }).then((jr) => {
       const jsonResponse = jr;
       // const listChannel =
@@ -364,7 +364,7 @@ class PreTelegram extends Component {
         />
 
         <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TELEGRAM CHANNELS</b></h3></div>
-        <CommonComponents.SearchBox action="#" />
+        <CommonComponents.SearchBox action="/telegram/channel/search" />
         <br />
         <br />
         <br />
@@ -395,7 +395,7 @@ class PreTelegram extends Component {
 
 
           <div style={{ textAlign: "center", marginTop: "10%" }}> <h3><b>TELEGRAM GROUPS</b></h3></div>
-          <CommonComponents.SearchBox action="#" />
+          <CommonComponents.SearchBox  action="/telegram/group/search"  />
           <br />
           <br />
           <br />

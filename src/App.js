@@ -36,7 +36,7 @@ import TweetSearchResult from "./components/social-media/twitter/tweet-search-re
 import PreTelegram from "./components/social-media/telegram/pre-telegram";
 import Telegram from "./components/social-media/telegram/telegram";
 import TelegramPostList from "./components/social-media/telegram/telegram-posts";
-import TelegramPostSearchResult from "./components/social-media/telegram/telegram-post-search-result";
+import TelegramChannelSearchResult from "./components/social-media/telegram/telegram-channel-search-result";
 
 import Linkedin from "./components/social-media/linkedin/linkedin";
 
@@ -51,6 +51,7 @@ import CommentList from "./components/social-media/youtube/comments";
 
 import KeywordSearch  from "./components/social-media/common/keyword-search";
 import KeywordSearchResults  from "./components/social-media/common/keyword-search-result";
+import TelegramGroupSearchResult from "./components/social-media/telegram/telegram-group-search-result";
 
 
 export default class App extends Component {
@@ -89,9 +90,9 @@ export default class App extends Component {
               <PrivateRoute path="/twitter">
                 <TwitterX />
               </PrivateRoute>
-              <PrivateRoute path="/telegram/search">
+              {/* <PrivateRoute path="/telegram/search">
                 <TelegramSearch />
-              </PrivateRoute>
+              </PrivateRoute> */}
               <PrivateRoute path="/telegram">
                 <TelegramX />
               </PrivateRoute>
@@ -196,20 +197,39 @@ function TwitterSearch() {
   );
 }
 
-function TelegramSearch() {
+function TelegramChannelSearch() {
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get("q");
 
   return (
     <React.Fragment>
       <NavBar />
-      <CommonComponents.SearchBoxSmall action="/telegram/search" />
-      <TelegramPageInfo linkHidden={true} _name={q} />
+      <CommonComponents.SearchBoxSmall action="/telegram/channel/search" />
+      {/* <TelegramPageInfo linkHidden={true} _name={q} /> */}
       <div
         className="container"
         style={{ marginBottom: "10%", textAlign: "center" }}
       >
-        <TelegramPostSearchResult searchQuery={q} />
+        <TelegramChannelSearchResult searchQuery={q} />
+      </div>
+    </React.Fragment>
+  );
+}
+
+function TelegramGroupSearch() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const q = urlParams.get("q");
+
+  return (
+    <React.Fragment>
+      <NavBar />
+      <CommonComponents.SearchBoxSmall action="/telegram/group/search" />
+      {/* <TelegramPageInfo linkHidden={true} _name={q} /> */}
+      <div
+        className="container"
+        style={{ marginBottom: "10%", textAlign: "center" }}
+      >
+        <TelegramGroupSearchResult searchQuery={q} />
       </div>
     </React.Fragment>
   );
@@ -219,16 +239,33 @@ function KeywordSearchResultsX() {
   const urlParams = new URLSearchParams(window.location.search);
   const q = urlParams.get("q");
 
+  const ifbu = urlParams.get("ifbu");
+  const ifbp = urlParams.get("ifbp");
+  const itw = urlParams.get("itw");
+  const itgc = urlParams.get("itgc");
+  const itgg = urlParams.get("itgg");
+
   return (
     <React.Fragment>
       <NavBar />
-      <CommonComponents.SearchBoxSmall action="/common/keyword/search" />
+      <CommonComponents.SearchBoxSmall action="/common/keyword/search" 
+                                      ifbu={ifbu}
+                                      ifbp={ifbp}
+                                      itw={itw}
+                                      itgc={itgc}
+                                      itgg={itgg}   />
       
       <div
         className=""
         style={{ marginBottom: "10%", textAlign: "center", marginLeft: "17%", marginRight: "17%" }}
       >
-        <KeywordSearchResults searchQuery={q} />
+        <KeywordSearchResults searchQuery={q}
+                              ifbu={ifbu}
+                              ifbp={ifbp}
+                              itw={itw}
+                              itgc={itgc}
+                              itgg={itgg}        
+        />
       </div>
     </React.Fragment>
   );
@@ -337,6 +374,12 @@ function TelegramX() {
   let match = useRouteMatch();
   return (
     <Switch>
+      <Route path={`${match.path}/channel/search`}>
+        <TelegramChannelSearch />
+      </Route>
+      <Route path={`${match.path}/group/search`}>
+        <TelegramGroupSearch />
+      </Route> 
       <Route path={`${match.path}/channel/:userName`}>
         <TelegramPage />
       </Route>
@@ -564,6 +607,9 @@ function TelegramPage() {
     </React.Fragment>
   );
 }
+
+
+
 
 function NotFoundX() {
   return (

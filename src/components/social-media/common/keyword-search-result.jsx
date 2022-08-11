@@ -86,10 +86,101 @@ function KeywordSearchResult(props) {
   const [data, setData] = useState();
   const [resultCount, setResultCount] = useState();
   let searchQuery = props.searchQuery;
-  const url = APIConstants.COMMON_API_ROOT + "/twitter/search?q=" + searchQuery;
+  const urlTwt = APIConstants.TWITTER_API_ROOT + "/twitter/search?q=" + searchQuery;
+  let rowsData = [];
+  let twitterCount = 0;
+  let telegramChannelCount = 0;
+  let telegramGroupCount = 0;
 
+    useEffect(() => {
+
+  if (props.itw == 'true'){
+      axios.get(urlTwt, {
+        headers: {
+          'x-access-token': globalFunctions.getAccessToken()
+        }
+      }).then((response) => {
+        let _dat = response.data;
+        if (_dat.length == 0 || _dat[0] == null) {
+          setData({ columns: dataRep, rows: [] });
+          return;
+        }
+  
+        for (let y = 0; y < _dat.length; y++) {
+
+          let __dat = _dat[y].tweets;
+          for (let x = 0; x < __dat.length; x++) {
+            let tmp_src = __dat[x];
+            rowsData.push({
+              number: twitterCount+1,
+              content: tmp_src.tweet,
+              likes: parseInt(tmp_src.likes_count),
+              by: <UserLink username={tmp_src.username} name={tmp_src.name} />,
+              retweets: parseInt(tmp_src.retweets_count),
+              datetime: 'N/A',
+              datasource:'_Twitter_'
+    
+            });
+            twitterCount++;
+          }
+        }
+
+
+        setData({ columns: dataRep, rows: rowsData });
+        setResultCount(twitterCount+telegramChannelCount+telegramGroupCount)
+        
+      });
+    }
+    }, []);
+  
+  const urlTgCh = APIConstants.TELEGRAM_API_ROOT + "/telegram/channel/search?q=" + searchQuery;
   useEffect(() => {
-    axios.get(url, {
+    if (props.itgc == 'true'){
+      axios.get(urlTgCh, {
+        headers: {
+          'x-access-token': globalFunctions.getAccessToken()
+        }
+      }).then((response) => {
+        let _dat = response.data;
+        console.log(_dat);
+        if (_dat.length == 0 || _dat[0] == null) {
+          setData({ columns: dataRep, rows: [] });
+          return;
+        }
+  
+        for (let y = 0; y < _dat.length; y++) {
+
+          let __dat = _dat[y].data;
+          for (let x = 0; x < __dat.length; x++) {
+            let tmp_src = __dat[x];
+            rowsData.push({
+              number: telegramChannelCount+1,
+              content: tmp_src.Message,
+              likes: '-',
+              by: '-',
+              retweets: '-',
+              datetime: tmp_src.Time,
+              datasource:'Telegram Channels'
+    
+            });
+            telegramChannelCount++;
+          }
+        }
+
+
+        setData({ columns: dataRep, rows: rowsData });
+        setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
+        
+      });
+  }
+  }, []);
+
+
+
+  const urlTgGp = APIConstants.TELEGRAM_API_ROOT + "/telegram/group/search?q=" + searchQuery;
+  useEffect(() => {
+    if (props.itgg == 'true'){
+    axios.get(urlTgGp, {
       headers: {
         'x-access-token': globalFunctions.getAccessToken()
       }
@@ -100,32 +191,32 @@ function KeywordSearchResult(props) {
         setData({ columns: dataRep, rows: [] });
         return;
       }
-
-      let tmp = [];
-      let currentCount = 1;
+ 
       for (let y = 0; y < _dat.length; y++) {
 
-        let __dat = _dat[y].tweets;
+        let __dat = _dat[y].data;
         for (let x = 0; x < __dat.length; x++) {
           let tmp_src = __dat[x];
-          tmp.push({
-            number: currentCount,
-            content: tmp_src.tweet,
-            likes: parseInt(tmp_src.likes_count),
-            by: <UserLink username={tmp_src.username} name={tmp_src.name} />,
-            retweets: parseInt(tmp_src.retweets_count),
-            datetime: 'N/A',
+          rowsData.push({
+            number: telegramGroupCount+1,
+            content: tmp_src.Message,
+            likes: '-',
+            by: '-',
+            retweets: '-',
+            datetime: tmp_src.Time,
+            datasource:'Telegram Groups'
    
           });
-          currentCount++;
+          telegramGroupCount++;
         }
       }
 
 
-      setData({ columns: dataRep, rows: tmp });
-      setResultCount(currentCount);
+      setData({ columns: dataRep, rows: rowsData });
+      setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
       
     });
+  }
   }, []);
 
   return <React.Fragment>

@@ -25,7 +25,13 @@ class SearchBox extends Component {
                     style={{ fontFamily: "Arial, FontAwesome" }}
                   />
                   <input type="hidden" name="doc-id" value={this.props.doc_id} />
-                  <input type="hidden" name="type" value={this.props.type} />
+                  <input type="hidden" name="type" value={this.props.type} /> 
+
+                  <input type="hidden" name="ifbu" value={this.props.ifbu} />
+                  <input type="hidden" name="ifbp" value={this.props.ifbp} />
+                  <input type="hidden" name="itw" value={this.props.itw} />
+                  <input type="hidden" name="itgc" value={this.props.itgc} />
+                  <input type="hidden" name="itgg" value={this.props.itgg} />
                 </div>
                 <div className="col-auto">
                   <button className="btn btn-lg btn-warning" type="submit">
@@ -67,6 +73,13 @@ class SearchBoxSmall extends Component {
                   />
                   <input type="hidden" name="doc-id" value={this.props.doc_id} />
                   <input type="hidden" name="type" value={this.props.type} />
+
+                  <input type="hidden" name="ifbu" value={this.props.ifbu} />
+                  <input type="hidden" name="ifbp" value={this.props.ifbp} />
+                  <input type="hidden" name="itw" value={this.props.itw} />
+                  <input type="hidden" name="itgc" value={this.props.itgc} />
+                  <input type="hidden" name="itgg" value={this.props.itgg} />
+                  
                 </div>
                 <div className="col-auto">
                   <button className="btn btn-sm btn-warning" type="submit">
