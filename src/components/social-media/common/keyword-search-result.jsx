@@ -93,9 +93,21 @@ function KeywordSearchResult(props) {
   let telegramChannelCount = 0;
   let telegramGroupCount = 0;
 
+  let doneTelegramChannel = true;
+  let doneTelegramGroup = true;
+  let doneTwitter = true;
+  let doneFacebookUser = true;
+  let doneFacebookPage = true;
+
+  function noneWaiting(){
+    return doneFacebookPage && doneFacebookUser && doneTwitter && doneTelegramChannel && doneTelegramGroup;
+  }
+
     useEffect(() => {
 
   if (props.itw == 'true'){
+      setStillLoading(<div className="spinner-border"></div>);
+      doneTwitter = false;
       axios.get(urlTwt, {
         headers: {
           'x-access-token': globalFunctions.getAccessToken()
@@ -128,7 +140,12 @@ function KeywordSearchResult(props) {
 
 
         setData({ columns: dataRep, rows: rowsData });
-        setResultCount(twitterCount+telegramChannelCount+telegramGroupCount)
+        setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
+        doneTwitter = true;
+        if (noneWaiting()){
+          setStillLoading(<div></div>);
+        }
+       
         
       });
     }
@@ -136,7 +153,7 @@ function KeywordSearchResult(props) {
   
   const urlTgCh = APIConstants.TELEGRAM_API_ROOT + "/telegram/channel/search?q=" + searchQuery;
   useEffect(() => {
-
+    doneTelegramChannel = false;
     setStillLoading(<div className="spinner-border"></div>);
     if (props.itgc == 'true'){
       axios.get(urlTgCh, {
@@ -173,8 +190,11 @@ function KeywordSearchResult(props) {
 
         setData({ columns: dataRep, rows: rowsData });
         setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
-        
-    setStillLoading(<div></div>);
+        doneTelegramChannel = true;
+        if (noneWaiting()){
+          setStillLoading(<div></div>);
+        }
+
       });
   }
   }, []);
@@ -184,6 +204,7 @@ function KeywordSearchResult(props) {
   const urlTgGp = APIConstants.TELEGRAM_API_ROOT + "/telegram/group/search?q=" + searchQuery;
   useEffect(() => {
     if (props.itgg == 'true'){
+      doneTelegramGroup = false;
     setStillLoading(<div className="spinner-border"></div>);
     axios.get(urlTgGp, {
       headers: {
@@ -219,8 +240,10 @@ function KeywordSearchResult(props) {
 
       setData({ columns: dataRep, rows: rowsData });
       setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
-      
-      setStillLoading(<div></div>);
+      doneTelegramGroup = true;
+      if (noneWaiting()){
+        setStillLoading(<div></div>);
+      }
     });
   }
   }, []);
