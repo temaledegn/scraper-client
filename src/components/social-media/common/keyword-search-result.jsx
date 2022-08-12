@@ -85,6 +85,7 @@ function KeywordSearchResult(props) {
   //   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   const [resultCount, setResultCount] = useState();
+  const [stillLoading, setStillLoading] = useState();
   let searchQuery = props.searchQuery;
   const urlTwt = APIConstants.TWITTER_API_ROOT + "/twitter/search?q=" + searchQuery;
   let rowsData = [];
@@ -135,6 +136,8 @@ function KeywordSearchResult(props) {
   
   const urlTgCh = APIConstants.TELEGRAM_API_ROOT + "/telegram/channel/search?q=" + searchQuery;
   useEffect(() => {
+
+    setStillLoading(<div className="spinner-border"></div>);
     if (props.itgc == 'true'){
       axios.get(urlTgCh, {
         headers: {
@@ -142,7 +145,7 @@ function KeywordSearchResult(props) {
         }
       }).then((response) => {
         let _dat = response.data;
-        console.log(_dat);
+        
         if (_dat.length == 0 || _dat[0] == null) {
           setData({ columns: dataRep, rows: [] });
           return;
@@ -171,6 +174,7 @@ function KeywordSearchResult(props) {
         setData({ columns: dataRep, rows: rowsData });
         setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
         
+    setStillLoading(<div></div>);
       });
   }
   }, []);
@@ -180,13 +184,14 @@ function KeywordSearchResult(props) {
   const urlTgGp = APIConstants.TELEGRAM_API_ROOT + "/telegram/group/search?q=" + searchQuery;
   useEffect(() => {
     if (props.itgg == 'true'){
+    setStillLoading(<div className="spinner-border"></div>);
     axios.get(urlTgGp, {
       headers: {
         'x-access-token': globalFunctions.getAccessToken()
       }
     }).then((response) => {
       let _dat = response.data;
-      console.log(_dat);
+      
       if (_dat.length == 0 || _dat[0] == null) {
         setData({ columns: dataRep, rows: [] });
         return;
@@ -215,13 +220,14 @@ function KeywordSearchResult(props) {
       setData({ columns: dataRep, rows: rowsData });
       setResultCount(twitterCount+telegramChannelCount+telegramGroupCount);
       
+      setStillLoading(<div></div>);
     });
   }
   }, []);
 
   return <React.Fragment>
             <br/>
-            <h4><b>Found {resultCount} Results</b></h4>
+            <h4><b>Found {resultCount} Results&emsp;{stillLoading}</b></h4>
             <MDBDataTable striped bordered hover data={data} />
         </React.Fragment>;
 }

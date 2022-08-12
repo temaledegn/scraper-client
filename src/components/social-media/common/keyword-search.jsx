@@ -12,8 +12,8 @@ class KeywordSearch extends Component {
   
   state = {
     searchResults: '',
-    fbPageIncluded:true,
-    fbUserIncluded:true,
+    fbPageIncluded:false,
+    fbUserIncluded:false,
     twitterIncluded:true,
     tgChannelIncluded:true,
     tgGroupIncluded:true,
@@ -178,18 +178,20 @@ class KeywordSearch extends Component {
 
         <div className="row">
           <div className="col-md-3" style={{marginTop:"8%"}}>
-            <label style={{fontSize:"larger"}}>
+            <label style={{fontSize:"larger", color:"grey"}}>
                 <input
                   name="facebook-group"
                   type="checkbox"
+                  disabled
                   checked={this.state.fbUserIncluded} 
                   onChange={this.handleIncludeFbUserChanged} />
                   &ensp;Include Facebook Users'
               </label><br/>
-              <label style={{fontSize:"larger"}}>
+              <label style={{fontSize:"larger", color:"grey"}}>
                 <input
                   name="facebook-user"
                   type="checkbox"
+                  disabled
                   checked={this.state.fbPageIncluded} 
                   onChange={this.handleIncludeFbPageChanged} />
                   &ensp;Include Facebook Pages'
