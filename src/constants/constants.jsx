@@ -1,5 +1,4 @@
-// const HOST_G = 'http://172.21.35.64';
-const HOST_G = 'http://localhost';
+const HOST_G = window.location.protocol+'//'+ window.location.hostname;
 
 const APIConstants = {
     FB_USER_API_ROOT: HOST_G + ':3333',

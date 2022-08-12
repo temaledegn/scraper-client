@@ -73,7 +73,7 @@ class KeywordSearch extends Component {
     </button> })
 
       if (this.state.liveSearchPlatform == 'facebook'){
-        fetch(APIConstants.FB_KEYWORD_API_ROOT+'/api/post/', {
+        fetch(APIConstants.COMMON_API_ROOT+'/common/keyword/facebook', {
           method: 'POST',
           headers: new Headers({
             'x-access-token': globalFunctions.getAccessToken(),
@@ -85,7 +85,7 @@ class KeywordSearch extends Component {
         }).then((response) => {
           return response.json();
         }).then((jsonResponse) => {
-
+          jsonResponse = jsonResponse.body;
             const dataRep = [
               {
                 label: "#",
@@ -153,9 +153,7 @@ class KeywordSearch extends Component {
           }),
           body:  JSON.stringify({
             keyword: targetKeyword,
-            twitterEnabled: this.state.twitterIncluded.toString(),
-            fbUserEnabled: this.state.fbUserIncluded.toString(),
-            fbPageEnabled: this.state.fbUserIncluded.toString()
+            twitterEnabled: 'true'
           })
         }).then((response) => {
           return response.json();
