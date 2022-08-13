@@ -227,15 +227,17 @@ class KeywordSearch extends Component {
               var twitterInfo = <div>
                 <p><b>Full Name:</b><span> {fullName} </span></p>
                 <p><b>Username:</b><span> <a href={"https://www.twitter.com/@" + username} target="?">{username}</a> </span></p>
-                <p><b>Joined Date:</b><span> {joinedDate}</span></p>
-                <p><b>Number of Followers:</b><span> {numberOfFollowers}</span></p>
+                <p><b>Joined:</b><span> {joinedDate.replaceAll('Joined ', '')}</span></p>
+                <p><b>Followers:</b><span> {numberOfFollowers}</span></p>
                 <p><b>Following:</b><span> {numberOfFollowing}</span></p>
               </div>
               
-              var hashtags = JSON.parse(currentTweet.hashtags.replaceAll('\'', '"')).map((item) => <p><a href={"https://twitter.com/hashtag/"+{item}+"?src=hashtag_click"} target="?">{'#'+item}</a></p>);
+              var hashtags = JSON.parse(currentTweet.hashtags.replaceAll('\'', '"')).map((item) => <p><a href={"https://twitter.com/hashtag/"+item+"?src=hashtag_click"} target="?">{'#'+item}</a></p>);
+
+              
 
               var mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
-                return <div><p><b>Twitter Name:</b> {item.name}</p><p><b>Twitter Username:</b> <a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
+                return <div><p><b>{item.name}</b><br/><a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
               });
 
               rowsData.push({
