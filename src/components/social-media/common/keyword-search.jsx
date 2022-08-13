@@ -160,10 +160,7 @@ class KeywordSearch extends Component {
           return response.json();
         }).then((jsonResponse) => {
             console.log(jsonResponse);
-
-
-
-          jsonResponse = jsonResponse.body;
+            
           const dataRep = [
             {
               label: "#",
