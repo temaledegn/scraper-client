@@ -235,7 +235,7 @@ class KeywordSearch extends Component {
               var hashtags = JSON.parse(currentTweet.hashtags.replaceAll('\'', '"')).map((item) => <p><a href={"https://twitter.com/hashtag/"+{item}+"?src=hashtag_click"} target="?">{'#'+item}</a></p>);
 
               var mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
-                return <div><p><b>Twitter Name:</b> {item.name}</p><p><b>Twitter Username:</b> <a href={"https://www.twitter.com/@"+item.screen_name}>{item.screen_name}</a></p></div>;
+                return <div><p><b>Twitter Name:</b> {item.name}</p><p><b>Twitter Username:</b> <a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
               });
 
               rowsData.push({
