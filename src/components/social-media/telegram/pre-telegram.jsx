@@ -123,39 +123,11 @@ class PreTelegram extends Component {
       return response.json();
     }).then((jr) => {
       const jsonResponse = jr;
-      // const listChannel =
-      //   React.createElement('div', {},
-      //     React.createElement('ul', {},
-      //       jsonResponse['channel_username'].map((item) => React.createElement('li', {},
-      //         // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/channel/delete' },
-      //         React.createElement('form', { onSubmit: this.onChannelDeleteHandler },
-      //           React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
-      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-      //           React.createElement('div', {}),
-      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-      //         React.createElement('div', {})))
-      //     )
-      //   );
-
+    
       const listChannel = jsonResponse['channel_username'].map((item, index) => {
         return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onChannelDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
       });
-
-      // const listGroup =
-      //   React.createElement('div', {},
-      //     React.createElement('ul', {},
-      //       jsonResponse['group_username'].map((item) => React.createElement('li', {},
-      //         // React.createElement('form', { method: 'POST', action: APIConstants.REQUESTS_API_ROOT + '/scraping/telegram/group/delete' },
-      //         React.createElement('form', { onSubmit: this.onGroupDeleteHandler },
-
-      //           React.createElement('a', { href: 'https://t.me/' + item, target: '_blank' }, item),
-      //           React.createElement('input', { type: 'hidden', value: item, name: 'username' }),
-      //           React.createElement('div', {}),
-      //           React.createElement('button', { type: 'submit', className: 'btn btn-sm btn-danger' }, '\u2715 Delete')),
-      //         React.createElement('div', {})))
-      //     )
-      //   );
-
+ 
       const listGroup = jsonResponse['group_username'].map((item, index) => {
         return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onGroupDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
       });

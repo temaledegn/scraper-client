@@ -156,9 +156,73 @@ class KeywordSearch extends Component {
             twitterEnabled: 'true'
           })
         }).then((response) => {
+          console.log(response);
           return response.json();
         }).then((jsonResponse) => {
             console.log(jsonResponse);
+
+
+
+          jsonResponse = jsonResponse.body;
+          const dataRep = [
+            {
+              label: "#",
+              field: "number",
+              sort: "asc",
+              width: 20,
+            },
+            {
+              label: "Tweet Content",
+              field: "content",
+              sort: "disabled",
+              maxWidth: 100,
+              width: 100,
+            },
+            {
+              label: "Posted By",
+              field: "by",
+              sort: "asc",
+              width: 50,
+            },
+            {
+              label: "Likes",
+              field: "likes",
+              sort: "asc",
+              width: 50,
+            },
+            {
+              label: "Retweets",
+              field: "retweets",
+              sort: "asc",
+              width: 50,
+            },
+            {
+              label: 'DateTime',
+              field: "datetime",
+              sort: "asc",
+              width: 100,
+            }
+          ];
+          var rowsData = [];
+          for (var i=0;i<jsonResponse.length;i++){
+            rowsData.push({
+              number:(i+1),
+              content:jsonResponse[i].postContent,
+              by:jsonResponse[i].poster,
+              likes:jsonResponse[i].numberOfLikes,
+              retweets:jsonResponse[i].numberOfShares,
+              datetime:jsonResponse[i].timeOfPost
+            })
+          }
+          const tableData = {columns:dataRep, rows:rowsData}
+          this.setState({ searchButton:<button className="btn btn-lg btn-success" type="submit"> Search </button>,
+          
+          liveSearchResult: <div className="container"><div className="text-center mt-5"><h5><b>Scraped {jsonResponse.length} Tweets from Twitter</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
+        
+        });
+
+
+
         });
       }
 
