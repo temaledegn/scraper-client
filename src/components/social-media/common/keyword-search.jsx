@@ -156,10 +156,8 @@ class KeywordSearch extends Component {
             twitterEnabled: 'true'
           })
         }).then((response) => {
-          console.log(response);
           return response.json();
         }).then((jsonResponse) => {
-            console.log(jsonResponse);
             
           const dataRep = [
             {
@@ -176,8 +174,14 @@ class KeywordSearch extends Component {
               width: 100,
             },
             {
-              label: "Posted By",
+              label: "Twitter Info",
               field: "by",
+              sort: "asc",
+              width: 50,
+            },
+            {
+              label: "Hashtags",
+              field: "hashtags",
               sort: "asc",
               width: 50,
             },
@@ -194,27 +198,62 @@ class KeywordSearch extends Component {
               width: 50,
             },
             {
-              label: 'DateTime',
+              label: 'Mentions',
+              field: "mentions",
+              sort: "asc",
+              width: 100,
+            },
+            {
+              label: 'Datetime',
               field: "datetime",
               sort: "asc",
               width: 100,
             }
           ];
           var rowsData = [];
+          var tweetsCount = 0;
           for (var i=0;i<jsonResponse.length;i++){
-            rowsData.push({
-              number:(i+1),
-              content:jsonResponse[i].postContent,
-              by:jsonResponse[i].poster,
-              likes:jsonResponse[i].numberOfLikes,
-              retweets:jsonResponse[i].numberOfShares,
-              datetime:jsonResponse[i].timeOfPost
-            })
+            var tmpRes = jsonResponse[i];
+            var joinedDate = tmpRes.Joined_date;
+            var numberOfFollowers = tmpRes["Number of Followers"];
+            var numberOfFollowing = tmpRes["Number of Followings"];
+            var tweets = tmpRes.tweets;
+            for (var j=0;j<tweets.length;j++){
+              var currentTweet = tweets[j];
+              tweetsCount++;
+              var fullName = currentTweet.name
+              var username = currentTweet.username
+              var twitterInfo = <div>
+                <p><b>Full Name:</b><span> {fullName} </span></p>
+                <p><b>Username:</b><span> <a href={"https://www.twitter.com/@" + username}>{username}</a> </span></p>
+                <p><b>Joined Date:</b><span> {joinedDate}</span></p>
+                <p><b>Number of Followers:</b><span> {numberOfFollowers}</span></p>
+                <p><b>Following:</b><span> {numberOfFollowing}</span></p>
+              </div>
+              
+              var hashtags = JSON.parse(currentTweet.hashtags.replaceAll('\'', '"')).map((item) => <p><a href={"https://twitter.com/hashtag/"+{item}+"?src=hashtag_click"}>{'#'+item}</a></p>);
+
+              var mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
+                return <div><p><b>Twitter Name:</b> {item.name}</p><p><b>Twitter Username:</b> {item.screen_name}</p></div>;
+              });
+              
+              rowsData.push({
+                number:tweetsCount,
+                content:currentTweet.tweet,
+                by:twitterInfo,
+                hashtags:hashtags,
+                likes:parseInt(currentTweet.likes_count),
+                retweets:parseInt(currentTweet.retweets_count),
+                mentions:mentions,
+                datetime:'N/A'
+              })
+            }
+            
           }
           const tableData = {columns:dataRep, rows:rowsData}
           this.setState({ searchButton:<button className="btn btn-lg btn-success" type="submit"> Search </button>,
           
-          liveSearchResult: <div className="container"><div className="text-center mt-5"><h5><b>Scraped {jsonResponse.length} Tweets from Twitter</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
+          liveSearchResult: <div style={{marginLeft:"5%", marginRight:"5%"}}><div className="text-center mt-5"><h5><b>Scraped {jsonResponse.length} Tweets from Twitter</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
         
         });
 
