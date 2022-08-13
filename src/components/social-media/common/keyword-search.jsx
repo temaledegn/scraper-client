@@ -210,7 +210,7 @@ class KeywordSearch extends Component {
               width: 100,
             }
           ];
-          console.log(jsonResponse);
+          // console.log(jsonResponse);
           var rowsData = [];
           var tweetsCount = 0;
           for (var i=0;i<jsonResponse.length;i++){
@@ -256,7 +256,7 @@ class KeywordSearch extends Component {
           const tableData = {columns:dataRep, rows:rowsData}
           this.setState({ searchButton:<button className="btn btn-lg btn-success" type="submit"> Search </button>,
           
-          liveSearchResult: <div style={{marginLeft:"5%", marginRight:"5%"}}><div className="text-center mt-5"><h5><b>Scraped {jsonResponse.length} Tweets from Twitter</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
+          liveSearchResult: <div style={{marginLeft:"5%", marginRight:"5%"}}><div className="text-center mt-5"><h5><b>Scraped {tweetsCount} Tweets from Twitter</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
         
         });
 
