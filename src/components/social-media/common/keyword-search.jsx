@@ -12,8 +12,8 @@ class KeywordSearch extends Component {
   
   state = {
     searchResults: '',
-    fbPageIncluded:false,
-    fbUserIncluded:false,
+    fbPageIncluded:true,
+    fbUserIncluded:true,
     twitterIncluded:true,
     tgChannelIncluded:true,
     tgGroupIncluded:true,
@@ -239,7 +239,8 @@ class KeywordSearch extends Component {
               var mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
                 return <div><p><b>{item.name}</b><br/><a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
               });
-
+              
+              var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"'))
               rowsData.push({
                 number:tweetsCount,
                 content:currentTweet.tweet,
@@ -281,20 +282,18 @@ class KeywordSearch extends Component {
 
         <div className="row">
           <div className="col-md-3" style={{marginTop:"8%"}}>
-            <label style={{fontSize:"larger", color:"grey"}}>
+            <label style={{fontSize:"larger"}}>
                 <input
                   name="facebook-group"
                   type="checkbox"
-                  disabled
                   checked={this.state.fbUserIncluded} 
                   onChange={this.handleIncludeFbUserChanged} />
                   &ensp;Include Facebook Users'
               </label><br/>
-              <label style={{fontSize:"larger", color:"grey"}}>
+              <label style={{fontSize:"larger"}}>
                 <input
                   name="facebook-user"
                   type="checkbox"
-                  disabled
                   checked={this.state.fbPageIncluded} 
                   onChange={this.handleIncludeFbPageChanged} />
                   &ensp;Include Facebook Pages'
