@@ -256,19 +256,24 @@ class KeywordSearch extends Component {
 
               }
               console.log(currentTweet.photos);
+              // var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((photoItem) => {
+              //   return  {
+              //       src: photoItem,
+              //       width:200,
+              //       height: 200
+              //   };
+              // });
+
               var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((photoItem) => {
-                return  {
-                    src: photoItem,
-                    width:200,
-                    height: 200
-                };
+                return  <img src={photoItem} width="300"/>
               });
 
               console.log(photos);
               
               rowsData.push({
                 number:tweetsCount,
-                photos:<PhotoAlbum layout="rows" photos={photos} />,
+                // photos:<PhotoAlbum layout="rows" photos={photos} />,
+                photos:<div>{photos}</div>,
                 content:currentTweet.tweet,
                 by:twitterInfo,
                 hashtags:hashtags,
