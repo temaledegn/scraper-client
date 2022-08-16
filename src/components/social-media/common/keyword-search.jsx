@@ -256,9 +256,10 @@ class KeywordSearch extends Component {
 
               }
               console.log(currentTweet.photos);
-              var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((item) => {
+              var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((photoItem) => {
                 return  {
-                    src: item,
+                    src: photoItem,
+                    width:200,
                     height: 200
                 };
               });
