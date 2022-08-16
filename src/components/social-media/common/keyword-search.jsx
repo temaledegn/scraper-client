@@ -170,7 +170,7 @@ class KeywordSearch extends Component {
               width: 20,
             },
             {
-              label: "",
+              label: "Photos",
               field: "photos",
               sort: "disabled",
               maxWidth: 100,
@@ -255,7 +255,7 @@ class KeywordSearch extends Component {
               }catch(e){
 
               }
-              
+              console.log(currentTweet.photos);
               var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((item) => {
                 return  {
                     src: item,
