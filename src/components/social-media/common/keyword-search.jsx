@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { MDBDataTable } from "mdbreact";
+import PhotoAlbum from "react-photo-album";
+
 
 import CommonComponents from "../../common/common";
  
@@ -7,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import APIConstants from '../../../constants/constants'
 import globalFunctions from "../../../common/GlobalsFunctions";
+
  
 class KeywordSearch extends Component {
   
@@ -167,6 +170,13 @@ class KeywordSearch extends Component {
               width: 20,
             },
             {
+              label: "",
+              field: "photos",
+              sort: "disabled",
+              maxWidth: 100,
+              width: 100,
+            },
+            {
               label: "Tweet Content",
               field: "content",
               sort: "disabled",
@@ -204,7 +214,7 @@ class KeywordSearch extends Component {
               width: 100,
             },
             {
-              label: 'Datetime',
+              label: 'Date & Time',
               field: "datetime",
               sort: "asc",
               width: 100,
@@ -240,16 +250,23 @@ class KeywordSearch extends Component {
                 return <div><p><b>{item.name}</b><br/><a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
               });
               
-              var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"'))
+              var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((item) => {
+                return  {
+                    src: item,
+                    height: 200
+                };
+              });
+              
               rowsData.push({
                 number:tweetsCount,
+                photos:<PhotoAlbum layout="rows" photos={photos} />,
                 content:currentTweet.tweet,
                 by:twitterInfo,
                 hashtags:hashtags,
                 likes:parseInt(currentTweet.likes_count),
                 retweets:parseInt(currentTweet.retweets_count),
                 mentions:mentions,
-                datetime:'N/A'
+                datetime:currentTweet.date + '</br>'+currentTweet.time,
               })
             }
             

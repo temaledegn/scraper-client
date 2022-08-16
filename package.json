@@ -24,6 +24,7 @@
     "react-date-range": "^1.4.0",
     "react-datepicker": "^4.7.0",
     "react-dom": "^17.0.2",
+    "react-photo-album": "^1.16.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-spinners": "^0.11.0",
