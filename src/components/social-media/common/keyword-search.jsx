@@ -249,13 +249,12 @@ class KeywordSearch extends Component {
               var mentions = [];
               
               try{
-                JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
+                mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
                 return <div><p><b>{item.name}</b><br/><a href={"https://www.twitter.com/@"+item.screen_name} target="?">{item.screen_name}</a></p></div>;
               });
+              }catch(e){
 
-            }catch(e){
-
-            }
+              }
               
               var photos = JSON.parse(currentTweet.photos.replaceAll("\'", '"')).map((item) => {
                 return  {
