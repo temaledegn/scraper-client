@@ -262,6 +262,8 @@ class KeywordSearch extends Component {
                     height: 200
                 };
               });
+
+              console.log(photos);
               
               rowsData.push({
                 number:tweetsCount,
@@ -271,7 +273,7 @@ class KeywordSearch extends Component {
                 hashtags:hashtags,
                 likes:parseInt(currentTweet.likes_count),
                 retweets:parseInt(currentTweet.retweets_count),
-                mentions:<div>mentions</div>,
+                mentions:<div>{mentions}</div>,
                 datetime:<div>{currentTweet.date + '\n'+currentTweet.time}</div>,
               })
             }
