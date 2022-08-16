@@ -246,7 +246,7 @@ class KeywordSearch extends Component {
 
               
 
-              var mentions = [];
+              var mentions = <div></div>;
               
               try{
                 mentions = JSON.parse(currentTweet.mentions.replaceAll('\'', '"')).map((item) => {
@@ -271,8 +271,8 @@ class KeywordSearch extends Component {
                 hashtags:hashtags,
                 likes:parseInt(currentTweet.likes_count),
                 retweets:parseInt(currentTweet.retweets_count),
-                mentions:mentions,
-                datetime:currentTweet.date + '</br>'+currentTweet.time,
+                mentions:<div>mentions</div>,
+                datetime:<div>{currentTweet.date + '\n'+currentTweet.time}</div>,
               })
             }
             
