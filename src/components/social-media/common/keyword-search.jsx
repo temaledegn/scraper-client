@@ -85,9 +85,20 @@ class KeywordSearch extends Component {
           body:  JSON.stringify({
             id: targetKeyword
           })
-        }).then((response) => {
-          return response.json();
+        }).then(async (response) => {
+            try {
+            return await response.json();
+          } catch (err) {
+            toast.warning("Unknown response!");
+            this.setState({
+              searchButton: <button className="btn btn-lg btn-success" type="submit">
+                Search
+              </button>
+            });
+          }
+
         }).then((jsonResponse) => {
+          try{
           jsonResponse = jsonResponse.body;
             const dataRep = [
               {
@@ -145,6 +156,11 @@ class KeywordSearch extends Component {
             liveSearchResult: <div className="container"><div className="text-center mt-5"><h5><b>Scraped {jsonResponse.length} Posts from Facebook</b></h5></div><MDBDataTable striped bordered hover data={tableData}/></div>
           
           });
+        }
+        catch(e){
+          this.setState({ searchButton:<button className="btn btn-lg btn-success" type="submit"> Search </button>});
+          toast.warning('Could not parse response from server!')
+        }
         });
 
       }else if (this.state.liveSearchPlatform == 'twitter'){
