@@ -176,7 +176,7 @@ class Twitter extends Component {
         ),
         React.createElement('p', {},
           React.createElement('b', {}, 'Joined Date: '),
-          React.createElement('span', {}, item.Joined_date.replace('Joined ', '')),
+          React.createElement('span', {}, item.Joined_Date.replace('Joined ', '')),
         ),
         React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/twitter/page/' + item.UserName.substring(1) + '?doc-id=' + item._id }, 'Go To Tweets \u279c'
         ),
