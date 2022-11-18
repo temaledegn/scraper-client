@@ -76,7 +76,7 @@ class KeywordSearch extends Component {
     </button> })
 
       if (this.state.liveSearchPlatform == 'facebook'){
-        fetch(APIConstants.COMMON_API_ROOT+'/common/keyword/facebook', {
+        fetch(APIConstants.COMMON_API_ROOT+'/common/keyword/facebook-live-search', {
           method: 'POST',
           headers: new Headers({
             'x-access-token': globalFunctions.getAccessToken(),
@@ -89,6 +89,7 @@ class KeywordSearch extends Component {
             try {
             return await response.json();
           } catch (err) {
+            console.log(err);
             toast.warning("Unknown response!");
             this.setState({
               searchButton: <button className="btn btn-lg btn-success" type="submit">
@@ -164,7 +165,7 @@ class KeywordSearch extends Component {
         });
 
       }else if (this.state.liveSearchPlatform == 'twitter'){
-        fetch(APIConstants.COMMON_API_ROOT+'/common/keyword/live-search/', {
+        fetch(APIConstants.COMMON_API_ROOT+'/common/keyword/twitter-live-search/', {
           method: 'POST',
           headers: new Headers({
             'x-access-token': globalFunctions.getAccessToken(),
@@ -241,9 +242,9 @@ class KeywordSearch extends Component {
           var tweetsCount = 0;
           for (var i=0;i<jsonResponse.length;i++){
             var tmpRes = jsonResponse[i];
-            var joinedDate = tmpRes.Joined_date;
-            var numberOfFollowers = tmpRes["Number of Followers"];
-            var numberOfFollowing = tmpRes["Number of Followings"];
+            // var joinedDate = tmpRes.Joined_date;
+            // var numberOfFollowers = tmpRes["Number of Followers"];
+            // var numberOfFollowing = tmpRes["Number of Followings"];
             var tweets = tmpRes.tweets;
             for (var j=0;j<tweets.length;j++){
               var currentTweet = tweets[j];
@@ -253,9 +254,9 @@ class KeywordSearch extends Component {
               var twitterInfo = <div>
                 <p><b>Full Name:</b><span> {fullName} </span></p>
                 <p><b>Username:</b><span> <a href={"https://www.twitter.com/@" + username} target="?">{username}</a> </span></p>
-                <p><b>Joined:</b><span> {joinedDate.replaceAll('Joined ', '')}</span></p>
+                {/* <p><b>Joined:</b><span> {joinedDate.replaceAll('Joined ', '')}</span></p>
                 <p><b>Followers:</b><span> {numberOfFollowers}</span></p>
-                <p><b>Following:</b><span> {numberOfFollowing}</span></p>
+                <p><b>Following:</b><span> {numberOfFollowing}</span></p> */}
               </div>
               
               var hashtags = JSON.parse(currentTweet.hashtags.replaceAll('\'', '"')).map((item) => <p><a href={"https://twitter.com/hashtag/"+item+"?src=hashtag_click"} target="?">{'#'+item}</a></p>);
@@ -284,7 +285,7 @@ class KeywordSearch extends Component {
                 return  <a href={photoItem} target="?"><img src={photoItem} width="200"/></a>
               });
 
-              console.log(photos);
+              // console.log(photos);
               
               rowsData.push({
                 number:tweetsCount,

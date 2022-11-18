@@ -28,8 +28,6 @@ class Facebook extends Component {
     this.fetchAndRenderDataAvaialbe();
   }
 
-
-
   fetchAndRenderData() {
     fetch(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/get', {
       headers: new Headers({
@@ -173,8 +171,7 @@ class Facebook extends Component {
 
 
   }
-
-
+  
   render() {
 
     const queryParams = new URLSearchParams(window.location.search);
