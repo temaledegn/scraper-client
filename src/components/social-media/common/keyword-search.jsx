@@ -178,7 +178,15 @@ class KeywordSearch extends Component {
         }).then((response) => {
           return response.json();
         }).then((jsonResponse) => {
-            
+            if (jsonResponse.length == 0){
+              toast.warning("Unable to complete scraping at the moment!");
+              this.setState({
+                searchButton: <button className="btn btn-lg btn-success" type="submit">
+                  Search
+                </button>
+              });
+              return;
+            }
           const dataRep = [
             {
               label: "#",
