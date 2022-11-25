@@ -319,6 +319,14 @@ class KeywordSearch extends Component {
 
 
 
+        }).catch((error) => {
+          console.log(err);
+            toast.warning("Network Error Occured!");
+            this.setState({
+              searchButton: <button className="btn btn-lg btn-success" type="submit">
+                Search
+              </button>
+            });
         });
       }
 
