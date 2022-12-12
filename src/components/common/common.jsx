@@ -34,7 +34,7 @@ class SearchBox extends Component {
                   <input type="hidden" name="itgg" value={this.props.itgg} />
                 </div>
                 <div className="col-auto">
-                  <button className="btn btn-lg btn-warning" type="submit">
+                  <button className="btn btn-lg btn-warning" type="submit" disabled={this.props.disabled}>
                     Search
                   </button>
                 </div>

@@ -22,8 +22,16 @@ class Twitter extends Component {
   }
 
 
+   validTwitteUser = (sn) => {
+    return /^[a-zA-Z0-9_]{4,15}$/.test(sn);
+  }
+
   onUsernameAddHandler =  (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
+    if (!this.validTwitteUser(e.target.username.value)){
+      toast.warning('Please enter a valid twitter username without "@"!')
+      return;
+    }
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/twitter/add', { 'username': e.target.username.value, 'type':'username' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
@@ -202,7 +210,7 @@ class Twitter extends Component {
         />
 
 
-        <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3><a href={APIConstants.STATISTICS_API_ROOT + "/app/dashboards#/view/3ea81100-63f2-11ec-b6bf-37cf416580cd?_a=(viewMode:edit)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))"} target="_blank">GET STATISTICS</a></div>
+        {/* <div style={{ textAlign: "center", marginTop: "2%" }}> <h3><b>TWITTER</b></h3><a href={APIConstants.STATISTICS_API_ROOT + "/app/dashboards#/view/3ea81100-63f2-11ec-b6bf-37cf416580cd?_a=(viewMode:edit)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))"} target="_blank">GET STATISTICS</a></div> */}
         <CommonComponents.SearchBox action="/twitter/search" />
         <div style={{ textAlign: "center", margin: "5% 0 2% 0" }}>
           <h2 style={{ color: "#555555" }}>
@@ -220,7 +228,8 @@ class Twitter extends Component {
         <br/>
 
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-2"></div>
+        <div className="col-md-8">
           <div className="text-center"><h5><b>By Twitter Username</b></h5></div>
           <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
@@ -235,7 +244,8 @@ class Twitter extends Component {
           </div>
         </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-2"></div>
+        {/* <div className="col-md-6">
           <div className="text-center"><h5><b>By Keyword</b></h5></div>
           <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingKeyword} />
@@ -251,7 +261,7 @@ class Twitter extends Component {
 
         </div>
 
-        </div>
+        </div> */}
       </div>
       
       <br/>

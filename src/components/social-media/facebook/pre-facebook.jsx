@@ -42,6 +42,10 @@ class PreFacebook extends Component {
 
   onPageAddHandler = (e) => {
     e.preventDefault();
+    if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
+      toast.warning('Please enter a valid facebook link!')
+      return;
+    }
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value, 'type':'link' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
@@ -111,6 +115,12 @@ class PreFacebook extends Component {
 
   onUserAddHandler = (e) => {
     e.preventDefault();
+
+    if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
+      toast.warning('Please enter a valid facebook link!')
+      return;
+    }
+
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value, 'type':'link'}, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
@@ -188,7 +198,7 @@ class PreFacebook extends Component {
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
         const list = jsonResponse.map((item, index) => {
-          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>&emsp;<a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
+          return { 'number': index + 1, 'username_link': item.replace('m.facebook', 'www.facebook'), 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onPageDeleteHandler(item) }}>Delete</button>&emsp;<a href={item.replace('m.facebook', 'www.facebook')} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
         });
         this.setState({ currentlyScraping: list });
       } else {
@@ -227,7 +237,7 @@ class PreFacebook extends Component {
     }).then((jsonResponse) => {
       if (jsonResponse.length > 1 || jsonResponse[0] != '') {
         const list = jsonResponse.map((item, index) => {
-          return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>&emsp; <a href={item} target="_blank" className="btn btn-sm btn-warning" >Open</a> </div>};
+          return { 'number': index + 1, 'username_link': item.replace('m.facebook', 'www.facebook'), 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onUserDeleteHandler(item) }}>Delete</button>&emsp; <a href={item.replace('m.facebook', 'www.facebook')} target="_blank" className="btn btn-sm btn-warning" >Open</a> </div>};
         });
         this.setState({ currentlyScrapingUser: list });
       } else {
@@ -592,7 +602,7 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "2%" }}><h3><b>USERS PROFILE</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", margin: "2%" }}>
+        {/* <div style={{ textAlign: "center", margin: "2%" }}>
           <h4>Click on a scraping date to continue or <a onClick={this.toggleDateRangeCollapse} href="#?">choose date range!</a></h4>
         </div>
         <Collapse isOpened={this.state.isDateRangeCollapsed}>
@@ -606,7 +616,7 @@ class PreFacebook extends Component {
 
             />
           </div>
-        </Collapse>
+        </Collapse> */}
 
 
         <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div>
@@ -617,7 +627,8 @@ class PreFacebook extends Component {
         <br/>
 
         <div className="row">
-          <div className="col-md-7">
+          <div className="col-md-2"></div>
+          <div className="col-md-8">
           <div className="text-center"><h5><b>Using Facebook Link</b></h5></div>
           <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingUser} />
@@ -633,7 +644,8 @@ class PreFacebook extends Component {
 
         </div>
           </div>
-          <div className="col-md-5">
+          <div className="col-md-8"></div>
+          {/* <div className="col-md-5">
 
           <div className="text-center"><h5><b>Using Keyword</b></h5></div>
         <div className="container">
@@ -649,7 +661,7 @@ class PreFacebook extends Component {
           <CommonComponents.AddRequestField hint="Enter keyword here" on_submit={this.onUserKeywordAddHandler} name='keyword' />
 
         </div>
-          </div>
+          </div> */}
         </div>
       
 
@@ -670,9 +682,10 @@ class PreFacebook extends Component {
           <h4><b>SCRAPING REQUESTS</b></h4>
         </div>
         <br/>
-
+        
         <div className="row">
-          <div className="col-md-7">
+        <div className="col-md-2"></div>
+          <div className="col-md-8">
           <div className="text-center"><h5><b>Using Facebook Link</b></h5></div>
           <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScraping} />
@@ -689,7 +702,8 @@ class PreFacebook extends Component {
         </div>
 
           </div>
-          <div className="col-md-5">
+          <div className="col-md-8"></div>
+          {/* <div className="col-md-5">
           <div className="text-center"><h5><b>Using Keyword</b></h5></div>
           <div className="container">
           <CommonComponents.ScrapingTable tableData={this.state.currentlyScrapingKeyword} />
@@ -704,7 +718,7 @@ class PreFacebook extends Component {
           <CommonComponents.AddRequestField hint="Enter keyword here" on_submit={this.onPageKeywordAddHandler} name='keyword' />
 
         </div>
-          </div>
+          </div> */}
         </div>
 
 

@@ -15,11 +15,11 @@ class KeywordSearch extends Component {
   
   state = {
     searchResults: '',
-    fbPageIncluded:true,
-    fbUserIncluded:true,
-    twitterIncluded:true,
-    tgChannelIncluded:true,
-    tgGroupIncluded:true,
+    fbPageIncluded:false,
+    fbUserIncluded:false,
+    twitterIncluded:false,
+    tgChannelIncluded:false,
+    tgGroupIncluded:false,
     liveSearchPlatform:"facebook",
     searchButton:<button className="btn btn-lg btn-success" type="submit">
                     Search
@@ -320,7 +320,7 @@ class KeywordSearch extends Component {
 
 
         }).catch((error) => {
-          console.log(err);
+          console.log(error);
             toast.warning("Network Error Occured!");
             this.setState({
               searchButton: <button className="btn btn-lg btn-success" type="submit">
@@ -398,6 +398,7 @@ class KeywordSearch extends Component {
                                     itw={this.state.twitterIncluded}
                                     itgc={this.state.tgChannelIncluded}
                                     itgg={this.state.tgGroupIncluded}
+                                    disabled={!(this.state.fbUserIncluded || this.state.fbPageIncluded || this.state.twitterIncluded || this.state.tgGroupIncluded || this.state.tgGroupIncluded)}
                                     />
        
   
