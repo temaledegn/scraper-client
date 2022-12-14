@@ -61,6 +61,12 @@ class NavBar extends Component {
             </li>
 
             <li className="nav-item">
+              <a className="nav-link" style={{color:'blue', backgroundColor:'#0e0'}} href="/config">
+                CONFIGURATION
+              </a>
+            </li>
+
+            <li className="nav-item">
               <a className="nav-link" href="/user-guide">
                 USER GUIDE
               </a>

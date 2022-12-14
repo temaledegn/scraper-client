@@ -52,6 +52,7 @@ import CommentList from "./components/social-media/youtube/comments";
 import KeywordSearch  from "./components/social-media/common/keyword-search";
 import KeywordSearchResults  from "./components/social-media/common/keyword-search-result";
 import TelegramGroupSearchResult from "./components/social-media/telegram/telegram-group-search-result";
+import Configuration from "./components/common/configuration";
 
 
 export default class App extends Component {
@@ -113,6 +114,9 @@ export default class App extends Component {
               </PrivateRoute>
               <PrivateRoute path="/user-guide">
                 <UserGuideX />
+              </PrivateRoute>
+              <PrivateRoute path="/config">
+                <ConfigurationX />
               </PrivateRoute>
               <PrivateRoute path="/">
                 <LandingX />
@@ -318,6 +322,15 @@ function Signup() {
         </div>
         <br />
       </div>
+    </React.Fragment>
+  );
+}
+
+function ConfigurationX(){
+  return (
+    <React.Fragment>
+      <NavBar />
+      <Configuration />
     </React.Fragment>
   );
 }
