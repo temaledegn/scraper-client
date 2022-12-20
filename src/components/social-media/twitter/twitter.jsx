@@ -9,12 +9,17 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 
+import { Collapse } from "react-collapse";
+
 class Twitter extends Component {
   state = {
     currentlyScraping: [],
     currentlyScrapingKeyword:[],
-    availablePages: 'Loading . . .'
+    availablePages: 'Loading . . .',
+    collapseExpand: []
   };
+
+  static grouped = {};
 
   componentWillMount() {
     this.fetchAndRenderData();
@@ -63,8 +68,6 @@ class Twitter extends Component {
         this.fetchAndRenderData();
       });
   }
-
-
 
   onKeywordAddHandler =  (e) => {
     e.preventDefault();
@@ -151,6 +154,30 @@ class Twitter extends Component {
     });
   }
 
+
+
+  updateShowCollapse(index) {
+    console.log('the index is ')
+    console.log(index)
+
+      for (var i = 0; i < index; i++) {
+        this.state.collapseExpand[i] = false;
+      }
+      for (var i = index + 1; i < this.state.collapseExpand.length; i++) {
+        this.state.collapseExpand[i] = false;
+      }
+      this.state.collapseExpand[index] = !this.state.collapseExpand[index];
+      console.log(this.state.collapseExpand)
+      // console.log(index)
+      // console.log(this.state.collapseExpand[index]);
+      // toast.error(this.state.collapseExpand[index].toString())
+      this.fetchAndRenderExtended();
+      
+  }
+
+
+
+
   fetchAndRenderDataAvailable() {
     fetch(APIConstants.TWITTER_API_ROOT + '/twitter/all-users', {
       headers: new Headers({
@@ -159,12 +186,55 @@ class Twitter extends Component {
     }).then((response) => {
       return response.json();
     }).then((jsonResponse) => {
+      this.grouped = {}
 
-      const list = jsonResponse.map((item) => React.createElement('div', { className: 'col-md-3', },
-        React.createElement('h5', {}, item.Fullname + ' ON ' + item.Date_of_Scraping),
+        for (var i=0;i<jsonResponse.length;i++){
+          let element = jsonResponse[i];
+          if (this.grouped.hasOwnProperty(element.UserName)){
+            this.grouped[element.UserName].DateIdPair.push({
+              date:element.Date_of_Scraping,
+              mongo_id:element._id
+            })
+          }else{
+            this.grouped[element.UserName] = {
+              "Description":element.Description,
+              "Fullname":element.Fullname,
+              "Joined_Date":element.Joined_Date,
+              "Number of Followers":element["Number of Followers"],
+              "Number of Followings":element["Number of Followings"],
+              "Tweets":element.Tweets,
+              "DateIdPair":[{
+                date:element.Date_of_Scraping,
+                mongo_id:element._id
+              }]
+            }
+          }
+        }
+
+      this.state.collapseExpand = Object.keys(this.grouped).map((item) => false);
+      this.fetchAndRenderExtended()
+    });
+  }
+
+
+  fetchAndRenderExtended(){
+    var list = [];
+    var widgets = {};
+    for (const [key, value] of Object.entries(this.grouped)) {
+      var tmpWidget = [];
+      value.DateIdPair.reverse().map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.mongo_id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
+      widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
+    }
+
+   
+    Object.keys(this.grouped).forEach((username, c_i) => {
+      var item = this.grouped[username];
+      list.push(
+        React.createElement('div', { className: 'col-md-3', },
+        React.createElement('h5', {}, item.Fullname),
         React.createElement('p', {},
           React.createElement('b', {}, 'Username: '),
-          React.createElement('a', { href: 'https://www.twitter.com/' + item.UserName, target: 'blank' }, item.UserName),
+          React.createElement('a', { href: 'https://www.twitter.com/' + username, target: 'blank' }, username),
         ),
         React.createElement('p', {},
           React.createElement('b', {}, 'About: '),
@@ -186,19 +256,25 @@ class Twitter extends Component {
           React.createElement('b', {}, 'Joined Date: '),
           React.createElement('span', {}, item.Joined_Date.replace('Joined ', '')),
         ),
-        React.createElement('a', { className: 'btn btn-sm btn-primary', href: '/twitter/page/' + item.UserName.substring(1) + '?doc-id=' + item._id }, 'Go To Tweets \u279c'
+        
+        React.createElement('a', { onClick: () => this.updateShowCollapse(c_i), href: "#?" }, this.state.collapseExpand[c_i] ? 'Hide Scraping Dates \u25b2' : 'Show All Scraping Dates \u25bc'),
+
+        React.createElement(Collapse, { isOpened: this.state.collapseExpand[c_i] },
+          widgets[username]
         ),
+        
         React.createElement('div', { style: { marginTop: "15%" } })
-      ));
-
-
-
-
-
-      this.setState({ availablePages: list });
+      )
+  )
 
     });
+
+   
+    
+    this.setState({ availablePages: list });
+
   }
+
 
   render() {
     return (

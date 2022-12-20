@@ -21,13 +21,13 @@ class Configuration extends Component {
                             <div style={{border:"solid #eee 2px", minHeight:"200px", overflowX:"scroll"}}></div>
                         </div>
                         <div className="col-md-4">
-                        <button className="btn btn-sm btn-success"><i className="fa fa-plus"></i>&emsp;Add FB Account&emsp;</button>  
+                        <button className="disabled btn btn-sm btn-success"><i className="fa fa-plus"></i>&emsp;Add FB Account&emsp;</button>  
                         <br/>
                         <br/>
-                        <button className="btn btn-sm btn-warning"><i className="fa fa-edit"></i>&emsp;Change Password</button>  
+                        <button className="disabled btn btn-sm btn-warning"><i className="fa fa-edit"></i>&emsp;Change Password</button>  
                         <br/>
                         <br/>
-                        <button className="btn btn-sm btn-danger"><i className="fa fa-times"></i>&emsp;Remove Account&ensp;</button>
+                        <button className="disabled btn btn-sm btn-danger"><i className="fa fa-times"></i>&emsp;Remove Account&ensp;</button>
                         </div>
                     </div>
                     <br/>
@@ -36,11 +36,12 @@ class Configuration extends Component {
                         <div className="input-group-prepend">
                             <span className="input-group-text">Continued Scraping Interval</span>
                         </div>
-                        <select class="custom-select">
-                            <option selected disabled>Choose time between consecutive scraping</option>
+                        <select disabled class="custom-select">
+                            <option disabled>Choose time between consecutive scraping</option>
                             <option value="1">1 Hour</option>
                             <option value="2">2 Hours</option>
                             <option value="3">4 Hours</option>
+                            <option selected value="3">6 Hours</option>
                             <option value="3">8 Hours</option>
                         </select>
                      </div>
@@ -49,16 +50,16 @@ class Configuration extends Component {
                         <div className="input-group-prepend">
                             <span className="input-group-text">Keyword Scraping Duration&nbsp;</span>
                         </div>
-                        <select class="custom-select">
-                            <option selected disabled>Choose how long to scrape live</option>
-                            <option value="1">Short</option>
+                        <select disabled class="custom-select">
+                            <option disabled>Choose how long to scrape live</option>
+                            <option selected value="1">Short</option>
                             <option value="2">Medium</option>
                             <option value="3">Long</option>
                             <option value="3">Very Long</option>
                         </select>
                      </div>
                     <br/>
-                     <div className="text-center"><button className="btn btn-outline-primary">Save FB Configuration</button> </div>
+                     <div className="text-center"><button disabled className="btn btn-outline-primary">Save FB Configuration</button> </div>
 
                    
                    
@@ -78,11 +79,12 @@ class Configuration extends Component {
                         <div className="input-group-prepend">
                             <span className="input-group-text">Continued Scraping Interval</span>
                         </div>
-                        <select class="custom-select">
-                            <option selected disabled>Choose time between consecutive scraping</option>
+                        <select disabled class="custom-select">
+                            <option disabled>Choose time between consecutive scraping</option>
                             <option value="1">1 Hour</option>
                             <option value="2">2 Hours</option>
                             <option value="3">4 Hours</option>
+                            <option selected value="3">6 Hours</option>
                             <option value="3">8 Hours</option>
                         </select>
                      </div>
@@ -91,16 +93,16 @@ class Configuration extends Component {
                         <div className="input-group-prepend">
                             <span className="input-group-text">Keyword Scraping Duration&nbsp;</span>
                         </div>
-                        <select class="custom-select">
-                            <option selected disabled>Choose how long to scrape live</option>
+                        <select disabled class="custom-select">
+                            <option disabled>Choose how long to scrape live</option>
                             <option value="1">Short</option>
-                            <option value="2">Medium</option>
+                            <option selected value="2">Medium</option>
                             <option value="3">Long</option>
                             <option value="3">Very Long</option>
                         </select>
                      </div>
                     <br/>
-                     <div className="text-center"><button className="btn btn-outline-primary">Save Twitter Configuration</button> </div>
+                     <div className="text-center"><button disabled className="btn btn-outline-primary">Save Twitter Configuration</button> </div>
 
             </div>
             <div className="col-md-3"></div>
