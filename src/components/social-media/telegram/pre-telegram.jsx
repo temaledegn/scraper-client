@@ -125,11 +125,11 @@ class PreTelegram extends Component {
       const jsonResponse = jr;
     
       const listChannel = jsonResponse['channel_username'].map((item, index) => {
-        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onChannelDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+        return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onChannelDeleteHandler(item) }}>Delete</button>&emsp;<a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div>};
       });
  
       const listGroup = jsonResponse['group_username'].map((item, index) => {
-        return { 'number': index + 1, 'username_link': item, 'action_delete': <button className="btn btn-sm btn-danger" onClick={() => { this.onGroupDeleteHandler(item) }}>Delete</button>, 'action_open': <a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a> };
+        return { 'number': index + 1, 'username_link': item, 'actions': <div><button className="btn btn-sm btn-danger" onClick={() => { this.onGroupDeleteHandler(item) }}>Delete</button>&emsp;<a href={'https://t.me/' + item} target="_blank" className="btn btn-sm btn-warning" >Open</a></div> };
       });
 
 
