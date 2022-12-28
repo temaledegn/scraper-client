@@ -122,8 +122,8 @@ class KeywordSearch extends Component {
                 width: 50,
               },
               {
-                label: "Likes",
-                field: "likes",
+                label: "Comments",
+                field: "comments",
                 sort: "asc",
                 width: 50,
               },
@@ -146,7 +146,7 @@ class KeywordSearch extends Component {
                 number:(i+1),
                 content:jsonResponse[i].postContent,
                 by:jsonResponse[i].poster,
-                likes:jsonResponse[i].numberOfLikes,
+                comments:jsonResponse[i].numberOfComments,
                 shares:jsonResponse[i].numberOfShares,
                 datetime:jsonResponse[i].timeOfPost
               })
