@@ -20,6 +20,8 @@ import { Collapse } from "react-collapse";
 
 import { css } from "@emotion/react";
 import ClipLoader from "react-spinners/ClipLoader";
+import { MDBDataTable } from "mdbreact";
+
 
 
 class PreFacebook extends Component {
@@ -28,13 +30,16 @@ class PreFacebook extends Component {
       startDate: new Date(),
       endDate: new Date(),
       key: 'selection',
-    }, isDateRangeCollapsed: false
+    }, isDateRangeCollapsed: false,
+    userPosts: null,
+    groupPosts: null,
   };
 
 
 
   componentWillMount() {
-    this.fetchAndRenderData();
+    // this.fetchAndRenderData();
+    this.fetchAndRenderDataV2();
 
     this.fetchAndRenderDataPages();
     this.fetchAndRenderDataUser();
@@ -532,6 +537,91 @@ class PreFacebook extends Component {
     });
   }
 
+  
+  fetchAndRenderDataV2() {
+    fetch(APIConstants.FB_USER_API_ROOT + '/facebook/page/all-posts', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      console.log(jsonResponse);
+
+      this.setState({ groupPosts: <ClipLoader color={"blue"} loading={true} css={true} size={100} /> });
+
+      const dataRep = [
+        {
+          label: "#",
+          field: "number",
+          sort: "asc",
+          width: 5,
+        },
+        {
+          label: "Post Content",
+          field: "post_content",
+          sort: "asc",
+          maxWidth: 100,
+          width: 35,
+        },
+        {
+          label: "Post Image",
+          field: "post_image",
+          sort: "asc",
+          maxWidth: 100,
+          width: 35,
+        },
+        {
+          label: "Post By",
+          field: "post_by",
+          sort: "disabled",
+          width: 10,
+        },
+        {
+          label: "Likes",
+          field: "likes",
+          sort: "disabled",
+          width: 5,
+        },
+        {
+          label: "Post Link",
+          field: "post_link",
+          sort: "disabled",
+          width: 10,
+        },
+     
+      ];
+
+      var tableData = [];
+  
+      jsonResponse.forEach((element, index) => {
+        tableData.push({
+          number: (index+1),
+          post_content: element.postContent,
+          post_image:  <img src={element.postImage} />,
+          post_by:element.nameOfPoster,
+          likes:element.numberOfLikes,
+          post_link: <a target="?" href={element.postLink}>{element.postLink}</a>
+        });
+      });
+
+      let data = { columns: dataRep, rows: tableData }
+      this.setState({ groupPosts: <MDBDataTable striped bordered hover data={data} /> });
+
+    });
+
+
+    // fetch(APIConstants.FB_USER_API_ROOT + '/facebook/user/all-posts', {
+    //   headers: new Headers({
+    //     'x-access-token': globalFunctions.getAccessToken(),
+    //   })
+    // }).then((response) => {
+    //   return response.json();
+    // }).then((jsonResponse) => {
+    //   console.log(jsonResponse);
+    // });
+  }
+
 
   handleDateRangeSelect = (date) => {
     var newRange = {
@@ -619,7 +709,12 @@ class PreFacebook extends Component {
         </Collapse> */}
 
 
-        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div>
+        {/* <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.usersDates}</div> */}
+
+        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.userPosts}</div>
+
+
+        <div style={{margin: "3%"}} className="text-center"><h3><a href="#">GO TO POSTS&emsp;<i className="fa fa-arrow-right"></i></a></h3></div>
 
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>
@@ -672,11 +767,15 @@ class PreFacebook extends Component {
 
         <div style={{ textAlign: "center", marginTop: "10%" }}><h3><b>GROUPS AND PAGES</b></h3></div>
         <CommonComponents.SearchBox action="#" />
-        <div style={{ textAlign: "center", marginTop: "2%" }}>
+        {/* <div style={{ textAlign: "center", marginTop: "2%" }}>
           <h4>Click on a scraping date to continue!</h4>
-        </div>
+        </div> */}
 
-        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.groupsDates}</div>
+        {/* <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.groupsDates}</div> */}
+        <div className="row" style={{ margin: "3% 5% 5% 5%" }}>{this.state.groupPosts}</div>
+
+
+        <div style={{margin: "3%"}} className="text-center"><h3><a href="#">GO TO POSTS&emsp;<i className="fa fa-arrow-right"></i></a></h3></div>
 
         <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h4><b>SCRAPING REQUESTS</b></h4>

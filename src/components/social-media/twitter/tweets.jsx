@@ -322,8 +322,9 @@ function TweetList(props) {
             </div>
           </div>),
           likes: parseInt(tmp_src.likes_count),
-          hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
-            React.createElement('a', { href: 'https://twitter.com/hashtag/' + item + '?src=hashtag_click', target: '_blank' }, '#' + item))),
+          hashtags: '',
+          // hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
+          //   React.createElement('a', { href: 'https://twitter.com/hashtag/' + item + '?src=hashtag_click', target: '_blank' }, '#' + item))),
           retweets: parseInt(tmp_src.retweets_count),
           // datetime: tmp_src.created_at,
           actions: (

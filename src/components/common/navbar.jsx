@@ -45,12 +45,12 @@ class NavBar extends Component {
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/linkedin">
+              <a className="nav-link" href="#?">
                 LINKEDIN
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/youtube">
+              <a className="nav-link" href="#?">
                 YOUTUBE
               </a>
             </li>

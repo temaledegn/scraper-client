@@ -1,8 +1,8 @@
 const HOST_G = window.location.protocol+'//'+ window.location.hostname;
 
 const APIConstants = {
-    FB_USER_API_ROOT: HOST_G + ':3333',
-    FB_GROUP_API_ROOT: HOST_G + ':3552',
+    FB_USER_API_ROOT: HOST_G + ':3001',
+    FB_GROUP_API_ROOT: HOST_G + ':3001',
     FB_KEYWORD_API_ROOT: HOST_G + ':3555',
     TWITTER_API_ROOT: HOST_G + ':3001',
     TELEGRAM_API_ROOT: HOST_G + ':3001',
