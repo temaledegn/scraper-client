@@ -598,7 +598,7 @@ class PreFacebook extends Component {
         tableData.push({
           number: (index+1),
           post_content: element.postContent,
-          post_image:  <img src={element.postImage} />,
+          post_image:  <img width={200} src={element.postImage} />,
           post_by:element.nameOfPoster,
           likes:element.numberOfLikes,
           post_link: <a target="?" href={element.postLink}>{element.postLink}</a>
@@ -611,15 +611,78 @@ class PreFacebook extends Component {
     });
 
 
-    // fetch(APIConstants.FB_USER_API_ROOT + '/facebook/user/all-posts', {
-    //   headers: new Headers({
-    //     'x-access-token': globalFunctions.getAccessToken(),
-    //   })
-    // }).then((response) => {
-    //   return response.json();
-    // }).then((jsonResponse) => {
-    //   console.log(jsonResponse);
-    // });
+
+
+    fetch(APIConstants.FB_USER_API_ROOT + '/facebook/user/all-posts', {
+      headers: new Headers({
+        'x-access-token': globalFunctions.getAccessToken(),
+      })
+    }).then((response) => {
+      return response.json();
+    }).then((jsonResponse) => {
+      console.log(jsonResponse);
+
+      this.setState({ userPosts: <ClipLoader color={"blue"} loading={true} css={true} size={100} /> });
+
+      const dataRep = [
+        {
+          label: "#",
+          field: "number",
+          sort: "asc",
+          width: 5,
+        },
+        {
+          label: "Post Content",
+          field: "post_content",
+          sort: "asc",
+          maxWidth: 100,
+          width: 35,
+        },
+        {
+          label: "Post Image",
+          field: "post_image",
+          sort: "asc",
+          maxWidth: 100,
+          width: 35,
+        },
+        {
+          label: "Post By",
+          field: "post_by",
+          sort: "disabled",
+          width: 10,
+        },
+        {
+          label: "Likes",
+          field: "likes",
+          sort: "disabled",
+          width: 5,
+        },
+        {
+          label: "Post Link",
+          field: "post_link",
+          sort: "disabled",
+          width: 10,
+        },
+     
+      ];
+
+      var tableData = [];
+  
+      jsonResponse.forEach((element, index) => {
+        tableData.push({
+          number: (index+1),
+          post_content: element.postContent,
+          post_image:  <img width={200} src={element.postImage} />,
+          post_by:element.nameOfPoster,
+          likes:element.numberOfLikes,
+          post_link: <a target="?" href={element.postLink}>{element.postLink}</a>
+        });
+      });
+
+      let data = { columns: dataRep, rows: tableData }
+      this.setState({ userPosts: <MDBDataTable striped bordered hover data={data} /> });
+
+    });
   }
 
 
