@@ -51,10 +51,10 @@ class PreFacebook extends Component {
 
   onPageAddHandler = (e) => {
     e.preventDefault();
-    if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
-      toast.warning('Please enter a valid facebook link!')
-      return;
-    }
+    // if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
+    //   toast.warning('Please enter a valid facebook link!')
+    //   return;
+    // }
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/page/add', { 'link': e.target.link.value, 'type':'link' }, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
     })
@@ -125,10 +125,10 @@ class PreFacebook extends Component {
   onUserAddHandler = (e) => {
     e.preventDefault();
 
-    if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
-      toast.warning('Please enter a valid facebook link!')
-      return;
-    }
+    // if (!(/(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)?/.test(e.target.link.value))){
+    //   toast.warning('Please enter a valid facebook link!')
+    //   return;
+    // }
 
     axios.post(APIConstants.REQUESTS_API_ROOT + '/scraping/facebook/user/add', { 'link': e.target.link.value, 'type':'link'}, {
       headers: { 'x-access-token': globalFunctions.getAccessToken() }
