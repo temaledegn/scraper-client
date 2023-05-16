@@ -22,6 +22,10 @@ import { css } from "@emotion/react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { MDBDataTable } from "mdbreact";
 
+import { Link } from "react-router-dom";
+
+
+
 
 
 class PreFacebook extends Component {
@@ -564,13 +568,7 @@ class PreFacebook extends Component {
           maxWidth: 100,
           width: 35,
         },
-        {
-          label: "Post Image",
-          field: "post_image",
-          sort: "asc",
-          maxWidth: 100,
-          width: 35,
-        },
+       
         {
           label: "Post By",
           field: "post_by",
@@ -598,10 +596,9 @@ class PreFacebook extends Component {
         tableData.push({
           number: (index+1),
           post_content: element.postContent,
-          post_image:  <img width={200} src={element.postImage} />,
           post_by:element.nameOfPoster,
           likes:element.numberOfLikes,
-          post_link: <a target="?" href={element.postLink}>{element.postLink}</a>
+          post_link: <a target="?" href={element.postLink}>CLICK HERE</a>
         });
       });
 
@@ -639,8 +636,8 @@ class PreFacebook extends Component {
           width: 35,
         },
         {
-          label: "Post Image",
-          field: "post_image",
+          label: "Date & Time",
+          field: "datetime",
           sort: "asc",
           maxWidth: 100,
           width: 35,
@@ -672,10 +669,21 @@ class PreFacebook extends Component {
         tableData.push({
           number: (index+1),
           post_content: element.postContent,
-          post_image:  <img width={200} src={element.postImage} />,
-          post_by:element.nameOfPoster,
+          // post_image:  <img width={200} src={element.postImage} />,
+          datetime:  element.timeOfPost,
+
+         post_by: <Link to={{
+                pathname: "/facebook/about/"+element.nameOfPoster,
+                state: {
+                  friendList: element.friendsOfPoster,
+                  about:element.aboutPoster
+                } 
+              }}
+            >{element.nameOfPoster}</Link>,
+
+          // _post_by: <a target="?" href={"/facebook/about/"+element.nameOfPoster}>{element.nameOfPoster}</a>,
           likes:element.numberOfLikes,
-          post_link: <a target="?" href={element.postLink}>{element.postLink}</a>
+          post_link: <a target="?" href={element.postLink}>CLICK HERE</a>
         });
       });
 

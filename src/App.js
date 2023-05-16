@@ -53,6 +53,7 @@ import KeywordSearch  from "./components/social-media/common/keyword-search";
 import KeywordSearchResults  from "./components/social-media/common/keyword-search-result";
 import TelegramGroupSearchResult from "./components/social-media/telegram/telegram-group-search-result";
 import Configuration from "./components/common/configuration";
+import AboutPage from "./components/social-media/facebook/about-user";
 
 
 export default class App extends Component {
@@ -78,6 +79,9 @@ export default class App extends Component {
 
               <PrivateRoute path="/facebook/search">
                 <FacebookSearch />
+              </PrivateRoute>
+              <PrivateRoute path="/facebook/about">
+                <FacebookAbout />
               </PrivateRoute>
               <PrivateRoute path="/facebook">
                 <FacebookX />
@@ -159,6 +163,18 @@ function PrivateRoute({ children, ...rest }) {
 }
 
 
+
+function FacebookAbout() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const q = urlParams.get("id");
+
+  return (
+    <React.Fragment>
+      <NavBar />
+      <AboutPage/>
+    </React.Fragment>
+  );
+}
 
 
 function FacebookSearch() {
