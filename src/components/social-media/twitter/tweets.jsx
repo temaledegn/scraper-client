@@ -10,6 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import globalFunctions from "../../../common/GlobalsFunctions";
 
+import Gallery from 'react-photo-gallery'
+
 
 
 
@@ -309,10 +311,23 @@ function TweetList(props) {
         tmp_src = _dat[x];
         let reporting = tmp_src.reporting;
 
+
+        var postImages =  JSON.parse(tmp_src.image_link).map( function(item, index) {
+              return {
+                'src': item,
+                'width': 4-index,
+                'height': 4-index
+              }
+         });
+
+
+
+
         tmp.push({
           tweetID: _dat[x].id,
           number: x + 1,
           content: (<div>
+             <Gallery photos={postImages} direction={"row"}/>
             <div>{tmp_src.tweet}</div>
             <br />
             <div className="row">
@@ -322,7 +337,9 @@ function TweetList(props) {
             </div>
           </div>),
           likes: parseInt(tmp_src.likes_count),
-          hashtags: '',
+          hashtags:  JSON.parse(tmp_src.hashtags).map( function(item) {
+            return <a target="?" href={"https://twitter.com/hashtag/"+item.substring(1)+"?src=hashtag_click"}>{item}</a>
+       }),
           // hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
           //   React.createElement('a', { href: 'https://twitter.com/hashtag/' + item + '?src=hashtag_click', target: '_blank' }, '#' + item))),
           retweets: parseInt(tmp_src.retweets_count),

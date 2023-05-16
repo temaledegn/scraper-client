@@ -197,6 +197,7 @@ class Twitter extends Component {
             })
           }else{
             this.grouped[element.UserName] = {
+              "Profile_Picture":element.Profile_Picture,
               "Description":element.Description,
               "Fullname":element.Fullname,
               "Joined_Date":element.Joined_Date,
@@ -225,17 +226,26 @@ class Twitter extends Component {
       value.DateIdPair.reverse().map((item) => tmpWidget.push(React.createElement('p', {}, React.createElement('a', { href: '/twitter/page/' + key.substring(1) + '?doc-id=' + item.mongo_id }, (item.date == null || item.date == undefined) ? 'Unknown Date' : new Date(item.date).toDateString() + ',  ' + new Date(item.date).toLocaleTimeString()))));
       widgets[key] = React.createElement('div', { style: { overflowY: "scroll", maxHeight: '25vh', border: "1px solid #eeee33", marginTop: "10px", padding: "15px" } }, tmpWidget);
     }
-
-   
+    
     Object.keys(this.grouped).forEach((username, c_i) => {
       var item = this.grouped[username];
       list.push(
         React.createElement('div', { className: 'col-md-3', },
+
+       React.createElement('div' ,{className:"row"}, 
+        React.createElement('div' ,{className:"col-md-3"}, 
+          React.createElement('img', {src: item.Profile_Picture, width: 60, height: 60, borderRadius: 30, overflow: 'hidden'}, null)
+        ),
+        React.createElement('div' ,{className:"col-md-9"}, 
         React.createElement('h5', {}, item.Fullname),
         React.createElement('p', {},
           React.createElement('b', {}, 'Username: '),
           React.createElement('a', { href: 'https://www.twitter.com/' + username, target: 'blank' }, username),
         ),
+        )
+       ),
+
+      
         React.createElement('p', {},
           React.createElement('b', {}, 'About: '),
           React.createElement('span', {}, item.Description),
