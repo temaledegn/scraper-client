@@ -312,7 +312,7 @@ function TweetList(props) {
         let reporting = tmp_src.reporting;
 
 
-        var postImages =  JSON.parse('['+tmp_src.image_link+']').map( function(item, index) {
+        var postImages =  tmp_src.image_link.split(', ').map( function(item, index) {
               return {
                 'src': item,
                 'width': 4-index,
