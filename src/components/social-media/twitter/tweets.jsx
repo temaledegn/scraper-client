@@ -337,7 +337,7 @@ function TweetList(props) {
             </div>
           </div>),
           likes: parseInt(tmp_src.likes_count),
-          hashtags:  JSON.parse('['+tmp_src.hashtags+']').map( function(item) {
+          hashtags:  tmp_src.hashtags.split(', ').map( function(item) {
             return <a target="?" href={"https://twitter.com/hashtag/"+item.substring(1)+"?src=hashtag_click"}>{item}</a>
        }),
           // hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
