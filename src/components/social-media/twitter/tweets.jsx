@@ -312,7 +312,7 @@ function TweetList(props) {
         let reporting = tmp_src.reporting;
 
 
-        var postImages =  JSON.parse(tmp_src.image_link).map( function(item, index) {
+        var postImages =  JSON.parse('['+tmp_src.image_link+']').map( function(item, index) {
               return {
                 'src': item,
                 'width': 4-index,
@@ -337,7 +337,7 @@ function TweetList(props) {
             </div>
           </div>),
           likes: parseInt(tmp_src.likes_count),
-          hashtags:  JSON.parse(tmp_src.hashtags).map( function(item) {
+          hashtags:  JSON.parse('['+tmp_src.hashtags+']').map( function(item) {
             return <a target="?" href={"https://twitter.com/hashtag/"+item.substring(1)+"?src=hashtag_click"}>{item}</a>
        }),
           // hashtags: JSON.parse(tmp_src.hashtags.replaceAll('\'', '"')).map((item) => React.createElement('div', {},
