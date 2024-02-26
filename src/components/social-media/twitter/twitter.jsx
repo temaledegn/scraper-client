@@ -264,7 +264,7 @@ class Twitter extends Component {
         ),
         React.createElement('p', {},
           React.createElement('b', {}, 'Joined Date: '),
-          React.createElement('span', {}, item.Joined_Date.replace('Joined ', '')),
+          React.createElement('span', {}, item.Joined_Date ? item.Joined_Date.replace('Joined ', ''):'N/A'),
         ),
         
         React.createElement('a', { onClick: () => this.updateShowCollapse(c_i), href: "#?" }, this.state.collapseExpand[c_i] ? 'Hide Scraping Dates \u25b2' : 'Show All Scraping Dates \u25bc'),
