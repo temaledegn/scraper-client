@@ -320,9 +320,21 @@ function TweetList(props) {
               }
          });
 
+        postImages = postImages.filter((item) => item.src !== null && item.src != '' && item.src != [] && item.src != '[]');
+
+        postImages.forEach(element => {
+          console.log(element.src)
+          if (element.src.startsWith('["') && element.src.endsWith('"]')){
+            element.src = JSON.parse(element.src)[0]  
+          }else if (element.src.startsWith('["')){
+            element.src = element.src.substring(2, -1)
+          }else if (element.src.endsWith('"]')){
+            element.src = element.src.substring(1, -1)
+          }
+        });
 
 
-
+        // console.log(postImages)
         tmp.push({
           tweetID: _dat[x].id,
           number: x + 1,
